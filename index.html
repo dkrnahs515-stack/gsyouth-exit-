@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>강서청소년회관 방탈출 : 실시간 멀티 탐색</title>
+    <title>강서청소년회관 방탈출 : 자정의 메아리</title>
     
     <!-- Firebase SDK 로드 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -16,163 +16,130 @@
             --primary: #ff5e62;
             --primary-glow: #ff9966;
             --text-main: #f0f0f0;
-            --text-muted: #888;
+            --text-muted: #aaa;
         }
 
         body {
-            margin: 0;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Pretendard', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
-            touch-action: none;
+            margin: 0; background-color: var(--bg-dark); color: var(--text-main);
+            font-family: 'Pretendard', sans-serif; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; overflow: hidden; touch-action: none;
         }
 
         .container {
-            width: 100%;
-            max-width: 500px;
-            padding: 15px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            width: 100%; max-width: 500px; padding: 15px; box-sizing: border-box;
+            display: flex; flex-direction: column; align-items: center;
         }
 
-        h1 { color: var(--primary-glow); margin: 5px 0 15px; font-size: 1.5rem; text-align: center; }
+        h1 { color: var(--primary-glow); margin: 10px 0 15px; font-size: 1.6rem; text-align: center; text-shadow: 0 0 10px rgba(255,153,102,0.4); }
+        h2 { font-size: 1.3rem; margin-top: 0; color: #fff; }
         
         .box {
-            background: var(--panel-bg);
-            padding: 20px;
-            border-radius: 12px;
-            width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #333;
-            text-align: center;
+            background: var(--panel-bg); padding: 25px 20px; border-radius: 12px;
+            width: 100%; box-sizing: border-box; border: 1px solid #333; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         input {
-            width: 90%;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 6px;
-            border: 1px solid #444;
-            background: #252830;
-            color: white;
-            font-size: 1rem;
-            text-align: center;
+            width: 90%; padding: 14px; margin: 15px 0; border-radius: 8px;
+            border: 1px solid #555; background: #252830; color: white;
+            font-size: 1.1rem; text-align: center; outline: none;
         }
+        input:focus { border-color: var(--primary-glow); box-shadow: 0 0 8px rgba(255,153,102,0.5); }
 
         button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 15px;
+            width: 100%; padding: 15px; margin-top: 15px;
             background: linear-gradient(45deg, var(--primary), var(--primary-glow));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
+            color: white; border: none; border-radius: 8px; font-size: 1.1rem;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
         }
+        button:active { transform: scale(0.97); }
+
+        /* 📖 스토리 인트로 텍스트 */
+        .story-text { line-height: 1.6; font-size: 1.05rem; text-align: left; margin-bottom: 20px; word-break: keep-all; }
+        .story-text span { color: var(--primary-glow); font-weight: bold; }
+        
+        .floor-desc { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary); text-align: left; margin-bottom: 15px; font-size: 0.95rem; }
 
         /* 🗺️ 메인 스테이지 캔버스 & 맵 */
-        #game-area {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
+        #game-area { display: none; flex-direction: column; align-items: center; width: 100%; }
 
         .status-bar {
-            width: 100%;
-            max-width: 360px;
-            background: rgba(255,255,255,0.05);
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            box-sizing: border-box;
-            font-weight: bold;
+            width: 100%; max-width: 360px; background: rgba(255,255,255,0.05);
+            padding: 10px 15px; border-radius: 8px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.9rem; box-sizing: border-box; font-weight: bold; border: 1px solid #333;
         }
 
         #map-canvas {
-            width: 360px;
-            height: 360px;
-            background: #15171e;
-            border: 3px solid #333;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+            width: 360px; height: 360px; background: #15171e;
+            border: 3px solid #444; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
         /* 🎮 가상 패드 */
-        .d-pad {
-            display: grid;
-            grid-template-columns: 50px 50px 50px;
-            grid-template-rows: 45px 45px;
-            gap: 5px;
-            margin-top: 15px;
-        }
-
-        .d-btn {
-            background: #2a2d37;
-            color: white;
-            border: 2px solid #444;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
+        .d-pad { display: grid; grid-template-columns: 55px 55px 55px; grid-template-rows: 50px 50px; gap: 8px; margin-top: 15px; }
+        .d-btn { background: #2a2d37; color: white; border: 2px solid #555; border-radius: 10px; font-weight: bold; font-size: 1.2rem; user-select: none; -webkit-user-select: none; }
         .d-btn:active, .d-btn.pressed { background: var(--primary); border-color: #fff; }
         .d-btn.up { grid-column: 2; grid-row: 1; }
         .d-btn.left { grid-column: 1; grid-row: 2; }
         .d-btn.down { grid-column: 2; grid-row: 2; }
         .d-btn.right { grid-column: 3; grid-row: 2; }
 
-        .footer {
-            margin-top: auto;
-            padding: 10px 0;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
+        .footer { margin-top: auto; padding: 15px 0; color: var(--text-muted); font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>자정의 메아리 : 자율 탐색</h1>
+        <h1>자정의 메아리</h1>
 
-        <!-- 1. 로그인 (인원수 제한 없음) -->
+        <!-- 1. 로그인 화면 -->
         <div id="login-screen" class="box">
-            <h3>탐색원 등록</h3>
-            <p style="font-size: 0.9rem; color: #aaa;">이름을 입력하면 캐릭터가 자동 배정됩니다.<br>(1인 단독 플레이 가능)</p>
+            <h2>탐색원 등록</h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">이름을 입력하면 고유 도형이 부여됩니다.</p>
             <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
-            <button onclick="joinGame()">탐색 시작하기</button>
+            <button onclick="showIntro()">입장하기</button>
         </div>
 
-        <!-- 2. 실시간 멀티플레이 맵 화면 -->
-        <div id="game-area">
-            <div class="status-bar">
-                <span id="my-info">내 캐릭터: -</span>
-                <span id="online-count" style="color:var(--primary-glow);">접속자: 0명</span>
+        <!-- 2. 상황 설명 (인트로) 화면 -->
+        <div id="intro-screen" class="box" style="display: none;">
+            <h2>강서청소년회관, 자정.</h2>
+            <div class="story-text">
+                갑자기 셔터가 내려가고 건물의 시스템이 마비되었습니다.<br><br>
+                당신은 다른 참가자들과 함께 이 곳에 갇혔습니다. 
+                탈출하기 위해서는 <span>3층부터 1층까지 내려가며</span> 각 층의 마비된 시스템을 수동으로 복구해야 합니다.
+            </div>
+            
+            <div class="floor-desc">
+                <strong>[층별 미션 안내]</strong><br>
+                📡 3층 청다방 : 방송 주파수 복구<br>
+                📁 2층 사무실 : 출입 보안 해제<br>
+                🔌 지하 아지트 : 비상 전원 가동<br>
+                🤖 1층 FUNGYM : AI 메인 시스템 재부팅
             </div>
 
-            <!-- 모두가 공유하는 2D 캔버스 맵 -->
+            <button onclick="joinGameAndStart()">3층으로 진입 (게임 시작)</button>
+        </div>
+
+        <!-- 3. 실시간 멀티플레이 맵 화면 -->
+        <div id="game-area">
+            <div class="status-bar">
+                <span id="stage-title" style="color: var(--primary-glow);">[3층] 청다방</span>
+                <span id="online-count">접속자: 0명</span>
+            </div>
+
+            <!-- 모두가 공유하는 커다란 1개 층 캔버스 -->
             <canvas id="map-canvas" width="360" height="360"></canvas>
 
-            <!-- 방향 컨트롤러 -->
-            <div class="d-pad">
-                <button class="d-btn up" id="btn-w">W</button>
-                <button class="d-btn left" id="btn-a">A</button>
-                <button class="d-btn down" id="btn-s">S</button>
-                <button class="d-btn right" id="btn-d">D</button>
+            <!-- 컨트롤러 및 기능 버튼 -->
+            <div style="display: flex; width: 360px; justify-content: space-between; align-items: flex-end;">
+                <div class="d-pad">
+                    <button class="d-btn up" id="btn-w">W</button>
+                    <button class="d-btn left" id="btn-a">A</button>
+                    <button class="d-btn down" id="btn-s">S</button>
+                    <button class="d-btn right" id="btn-d">D</button>
+                </div>
+                <!-- 💡 다음 층으로 이동 버튼 (관리자/테스트용) -->
+                <button onclick="advanceStage()" style="width: 120px; font-size: 0.9rem; padding: 10px; margin: 0 0 5px 0; background: #333;">다음 층 이동 ➔</button>
             </div>
         </div>
 
@@ -195,33 +162,79 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 🎨 랜덤 배정을 위한 캐릭터 설정 풀
         const SHAPE_POOL = [
-            { shape: 'circle', color: '#ff4d4d', name: '동그라미' },
-            { shape: 'rect', color: '#4dabf7', name: '네모' },
-            { shape: 'triangle', color: '#00e676', name: '세모' },
-            { shape: 'pentagon', color: '#ffd43b', name: '오각형' },
-            { shape: 'star', color: '#cc5de8', name: '별' }
+            { shape: 'circle', color: '#ff4d4d' },
+            { shape: 'rect', color: '#4dabf7' },
+            { shape: 'triangle', color: '#00e676' },
+            { shape: 'pentagon', color: '#ffd43b' },
+            { shape: 'star', color: '#cc5de8' }
         ];
 
-        let myId = ""; // 서버에서 자동 발급받는 고유 ID
+        // 🧩 층별 스테이지 및 가구(오브젝트) 데이터 세팅
+        const STAGE_DATA = {
+            1: {
+                title: "[3층] 청다방 (크리에이터실)",
+                bgColor: "#1e222d",
+                objects: [
+                    { x: 40, y: 40, w: 120, h: 50, color: "#4a4a4a", label: "방송 데스크" },
+                    { x: 240, y: 60, w: 60, h: 60, color: "#8b5a2b", label: "원탁 테이블" },
+                    { x: 60, y: 250, w: 160, h: 40, color: "#3d5a80", label: "휴식용 소파" },
+                    { x: 300, y: 200, w: 40, h: 100, color: "#666", label: "서버랙" }
+                ]
+            },
+            2: {
+                title: "[2층] 사무실",
+                bgColor: "#232025",
+                objects: [
+                    { x: 30, y: 30, w: 80, h: 60, color: "#5c4033", label: "직원 책상" },
+                    { x: 150, y: 30, w: 80, h: 60, color: "#5c4033", label: "직원 책상" },
+                    { x: 20, y: 220, w: 40, h: 120, color: "#778899", label: "철제 캐비닛" },
+                    { x: 120, y: 180, w: 180, h: 20, color: "#111", label: "유리 파티션" }
+                ]
+            },
+            3: {
+                title: "[지하] 아지트",
+                bgColor: "#1a1525",
+                objects: [
+                    { x: 100, y: 120, w: 160, h: 120, color: "#2d1b2e", label: "댄스 플로어" },
+                    { x: 20, y: 20, w: 100, h: 40, color: "#800020", label: "낡은 스피커" },
+                    { x: 280, y: 280, w: 60, h: 60, color: "#444", label: "배전반" }
+                ]
+            },
+            4: {
+                title: "[1층] FUNGYM 스마트 체육관",
+                bgColor: "#1a252a",
+                objects: [
+                    { x: 120, y: 20, w: 120, h: 60, color: "#00ffff", label: "AI 메인 보드" },
+                    { x: 30, y: 150, w: 60, h: 120, color: "#2f4f4f", label: "스마트 기구" },
+                    { x: 270, y: 150, w: 60, h: 120, color: "#2f4f4f", label: "스마트 기구" }
+                ]
+            }
+        };
+
+        let myId = ""; 
         let myName = "";
-        let myPos = { x: 180, y: 180 }; // 중앙 스폰
+        let myPos = { x: 180, y: 320 }; // 모든 층의 시작점 (문 앞 느낌)
+        let currentStage = 1; // 현재 층
         let allPlayersData = {};
+        
         const speed = 4;
         const keys = { w: false, a: false, s: false, d: false };
-
         const canvas = document.getElementById('map-canvas');
         const ctx = canvas.getContext('2d');
 
-        function joinGame() {
+        // 로그인 -> 인트로 화면
+        function showIntro() {
             myName = document.getElementById('player-name').value.trim();
             if (!myName) return alert("이름을 입력해주세요.");
+            
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('intro-screen').style.display = 'block';
+        }
 
-            // 랜덤 캐릭터 부여
+        // 인트로 -> 맵 진입 (서버 등록)
+        function joinGameAndStart() {
             const randomChar = SHAPE_POOL[Math.floor(Math.random() * SHAPE_POOL.length)];
-
-            // 💡 고정된 역할(p1, p2) 대신 서버에서 유니크 ID를 새로 생성하여 할당
             const playerRef = db.ref('gameRoom/players').push();
             myId = playerRef.key;
 
@@ -232,57 +245,75 @@
                 color: randomChar.color,
                 shape: randomChar.shape
             });
-
-            // 내가 창을 닫으면 서버에서 내 캐릭터 정보 자동 삭제
             playerRef.onDisconnect().remove();
 
-            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('game-area').style.display = 'flex';
-            
-            document.getElementById('my-info').innerHTML = `내 캐릭터: <span style="color:${randomChar.color}">${randomChar.name}</span>`;
 
             startMultiplayer();
         }
 
         function startMultiplayer() {
-            // 1. 서버에서 접속한 모든 사람들의 위치를 실시간 수신
+            // 1. 유저 실시간 동기화
             db.ref('gameRoom/players').on('value', (snapshot) => {
                 allPlayersData = snapshot.val() || {};
                 const count = Object.keys(allPlayersData).length;
                 document.getElementById('online-count').innerText = `접속자: ${count}명`;
             });
 
-            // 2. 키보드 및 터치 이벤트 바인딩
-            setupControls();
+            // 2. 💡 스테이지(층수) 실시간 동기화 (누군가 층을 바꾸면 모두가 바뀜)
+            db.ref('gameRoom/gameState/stage').on('value', (snapshot) => {
+                let stageVal = snapshot.val();
+                if(!stageVal) { // 서버에 스테이지 값이 없으면 1로 세팅
+                    db.ref('gameRoom/gameState/stage').set(1);
+                    stageVal = 1;
+                }
+                
+                // 층이 바뀌었을 경우
+                if(currentStage !== stageVal) {
+                    currentStage = stageVal;
+                    // 위치 초기화
+                    myPos.x = 180; myPos.y = 320; 
+                    db.ref('gameRoom/players/' + myId).update({ x: myPos.x, y: myPos.y });
+                }
+                
+                document.getElementById('stage-title').innerText = STAGE_DATA[currentStage].title;
+            });
 
-            // 3. 메인 게임 루프 시작
+            setupControls();
             requestAnimationFrame(gameLoop);
+        }
+
+        // 누군가 [다음 층 이동] 버튼을 누르면 서버의 stage 값을 증가시킴
+        function advanceStage() {
+            if (currentStage >= 4) {
+                alert("탈출에 성공했습니다!");
+                return;
+            }
+            db.ref('gameRoom/gameState/stage').set(currentStage + 1);
         }
 
         // --- 🕹️ 조작 컨트롤 ---
         function setupControls() {
             window.addEventListener('keydown', e => {
                 const k = e.key.toLowerCase();
-                if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'].includes(k)) {
-                    if (k === 'w' || k === 'arrowup') keys.w = true;
-                    if (k === 'a' || k === 'arrowleft') keys.a = true;
-                    if (k === 's' || k === 'arrowdown') keys.s = true;
-                    if (k === 'd' || k === 'arrowright') keys.d = true;
+                if (['w','a','s','d','arrowup','arrowleft','arrowdown','arrowright'].includes(k)) {
+                    if (k==='w'||k==='arrowup') keys.w = true;
+                    if (k==='a'||k==='arrowleft') keys.a = true;
+                    if (k==='s'||k==='arrowdown') keys.s = true;
+                    if (k==='d'||k==='arrowright') keys.d = true;
                 }
             });
-
             window.addEventListener('keyup', e => {
                 const k = e.key.toLowerCase();
-                if (k === 'w' || k === 'arrowup') keys.w = false;
-                if (k === 'a' || k === 'arrowleft') keys.a = false;
-                if (k === 's' || k === 'arrowdown') keys.s = false;
-                if (k === 'd' || k === 'arrowright') keys.d = false;
+                if (k==='w'||k==='arrowup') keys.w = false;
+                if (k==='a'||k==='arrowleft') keys.a = false;
+                if (k==='s'||k==='arrowdown') keys.s = false;
+                if (k==='d'||k==='arrowright') keys.d = false;
             });
 
-            bindVirtualBtn('btn-w', 'w');
-            bindVirtualBtn('btn-a', 'a');
-            bindVirtualBtn('btn-s', 's');
-            bindVirtualBtn('btn-d', 'd');
+            bindVirtualBtn('btn-w', 'w'); bindVirtualBtn('btn-a', 'a');
+            bindVirtualBtn('btn-s', 's'); bindVirtualBtn('btn-d', 'd');
         }
 
         function bindVirtualBtn(id, keyName) {
@@ -300,63 +331,92 @@
         let lastMoveTime = 0;
 
         function gameLoop() {
-            let moved = false;
+            let nx = myPos.x;
+            let ny = myPos.y;
 
-            if (keys.w && myPos.y > 15) { myPos.y -= speed; moved = true; }
-            if (keys.s && myPos.y < 345) { myPos.y += speed; moved = true; }
-            if (keys.a && myPos.x > 15) { myPos.x -= speed; moved = true; }
-            if (keys.d && myPos.x < 345) { myPos.x += speed; moved = true; }
+            if (keys.w) ny -= speed;
+            if (keys.s) ny += speed;
+            if (keys.a) nx -= speed;
+            if (keys.d) nx += speed;
 
-            // 내가 움직였으면 Firebase 서버로 내 고유 ID에 해당하는 좌표 업데이트
-            if (moved && Date.now() - lastMoveTime > 30) {
-                db.ref('gameRoom/players/' + myId).update({
-                    x: myPos.x,
-                    y: myPos.y
-                });
-                lastMoveTime = Date.now();
+            // 1. 맵 밖으로 못 나가게 방지 (캐릭터 반지름 12 적용)
+            if (nx < 12) nx = 12; if (nx > 348) nx = 348;
+            if (ny < 12) ny = 12; if (ny > 348) ny = 348;
+
+            // 2. 💡 가구(오브젝트) 물리 충돌 체크
+            let isCollision = false;
+            const objs = STAGE_DATA[currentStage].objects;
+            
+            for (let obj of objs) {
+                // AABB 충돌 알고리즘 (캐릭터를 24x24 박스로 간주)
+                if (nx - 12 < obj.x + obj.w && nx + 12 > obj.x &&
+                    ny - 12 < obj.y + obj.h && ny + 12 > obj.y) {
+                    isCollision = true;
+                    break;
+                }
+            }
+
+            // 충돌하지 않았을 때만 좌표 확정
+            if (!isCollision && (nx !== myPos.x || ny !== myPos.y)) {
+                myPos.x = nx;
+                myPos.y = ny;
+
+                if (Date.now() - lastMoveTime > 30) {
+                    db.ref('gameRoom/players/' + myId).update({ x: myPos.x, y: myPos.y });
+                    lastMoveTime = Date.now();
+                }
             }
 
             drawMap();
             requestAnimationFrame(gameLoop);
         }
 
-        // --- 🎨 캔버스에 맵 및 캐릭터 그리기 ---
+        // --- 🎨 캔버스 렌더링 ---
         function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 1. 현재 층 바닥 색상
+            ctx.fillStyle = STAGE_DATA[currentStage].bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 1. 강서청소년회관 구역 표시 (배경 십자선)
-            ctx.strokeStyle = "#2e3240";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(180, 0); ctx.lineTo(180, 360);
-            ctx.moveTo(0, 180); ctx.lineTo(360, 180);
-            ctx.stroke();
+            // 2. 가구/오브젝트 그리기
+            const objs = STAGE_DATA[currentStage].objects;
+            for (let obj of objs) {
+                // 그림자 효과
+                ctx.fillStyle = "rgba(0,0,0,0.5)";
+                ctx.fillRect(obj.x + 3, obj.y + 3, obj.w, obj.h);
+                
+                // 가구 본체
+                ctx.fillStyle = obj.color;
+                ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
+                ctx.strokeStyle = "#111";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
 
-            ctx.fillStyle = "#444a5e";
-            ctx.font = "12px sans-serif";
-            ctx.fillText("3층 청다방", 10, 20);
-            ctx.fillText("2층 사무실", 290, 20);
-            ctx.fillText("지하 아지트", 10, 350);
-            ctx.fillText("1층 FUNGYM", 280, 350);
+                // 가구 이름(라벨) 표시
+                ctx.fillStyle = "rgba(255,255,255,0.7)";
+                ctx.font = "11px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(obj.label, obj.x + obj.w / 2, obj.y + obj.h / 2);
+            }
 
-            // 2. 서버에 등록된 모든 플레이어 그리기 (접속 인원수 무관)
+            // 3. 서버에 등록된 캐릭터들 그리기
             Object.keys(allPlayersData).forEach(key => {
                 const p = allPlayersData[key];
-                drawShape(p.x, p.y, p.color, p.shape);
-
-                // 이름 표시
-                ctx.fillStyle = "white";
-                ctx.font = "bold 11px sans-serif";
-                ctx.textAlign = "center";
-                ctx.fillText(p.name, p.x, p.y - 18);
+                if(p.x !== undefined && p.y !== undefined) {
+                    drawShape(p.x, p.y, p.color, p.shape);
+                    ctx.fillStyle = "white";
+                    ctx.font = "bold 11px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "alphabetic";
+                    ctx.fillText(p.name, p.x, p.y - 18);
+                }
             });
         }
 
-        // --- 📐 도형 렌더링 함수 ---
+        // --- 📐 캐릭터 모양 그리기 ---
         function drawShape(x, y, color, shape) {
             ctx.fillStyle = color;
             ctx.beginPath();
-
             if (shape === 'circle') {
                 ctx.arc(x, y, 12, 0, Math.PI * 2);
             } else if (shape === 'rect') {
