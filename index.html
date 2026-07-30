@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>강서청소년회관 방탈출 : 실시간 동기화</title>
     
-    <!-- Firebase SDK 로드 -->
+    <!-- Firebase SDK 로드 (호환성 버전) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <!-- Analytics(선택사항) 로드를 원할 경우 아래 스크립트 추가 가능하지만, 필수 기능이 아니므로 제외하여 가볍게 유지합니다. -->
 
     <style>
         :root { --bg-dark: #121212; --primary: #ff5e62; --primary-glow: #ff9966; --text-main: #f0f0f0; --panel: #1e1e1e; }
@@ -59,7 +60,6 @@
         <div id="lobby-screen" class="box" style="display: none;">
             <h2>실시간 참가자 현황</h2>
             
-            <!-- 💡 실시간 접속자 수 표시 영역 추가 -->
             <div class="count-badge" id="player-count">현재 접속자: 0 / 5명</div>
 
             <div class="player-list" id="players-display">
@@ -71,15 +71,16 @@
     </div>
 
     <script>
-        // 🚨 중요: 여기에 본인의 Firebase 설정값을 다시 붙여넣으세요!
+        // 제공해주신 Firebase 설정값 반영 완료
         const firebaseConfig = {
-            apiKey: "본인의_API_KEY",
-            authDomain: "본인의_PROJECT_ID.firebaseapp.com",
-            databaseURL: "https://본인의_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "본인의_PROJECT_ID",
-            storageBucket: "본인의_PROJECT_ID.appspot.com",
-            messagingSenderId: "본인의_SENDER_ID",
-            appId: "본인의_APP_ID"
+            apiKey: "AIzaSyAVtGfRyA9CaKXU2Ol5sfLA0gK2k4gXn5A",
+            authDomain: "gsyouth-exit.firebaseapp.com",
+            databaseURL: "https://gsyouth-exit-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "gsyouth-exit",
+            storageBucket: "gsyouth-exit.firebasestorage.app",
+            messagingSenderId: "683811058406",
+            appId: "1:683811058406:web:bdf4f2131580b52b824127",
+            measurementId: "G-8XBHWLCQZ7"
         };
 
         // Firebase 초기화
@@ -95,14 +96,17 @@
 
             if (!name) return alert("이름을 입력해주세요.");
 
+            // 내 정보를 데이터베이스에 쓰기
             db.ref('gameRoom/players/' + myRole).set({
                 name: name,
                 ready: false
             });
 
+            // 화면 전환
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'block';
 
+            // 동기화 시작
             startSync();
         }
 
@@ -112,10 +116,10 @@
             playersRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 let displayHtml = "";
-                let count = 0; // 💡 접속자 수 계산 변수
+                let count = 0;
                 
                 if (data) {
-                    count = Object.keys(data).length; // 등록된 데이터(역할)의 개수를 셈
+                    count = Object.keys(data).length;
                     
                     Object.keys(data).forEach(key => {
                         const p = data[key];
@@ -127,7 +131,6 @@
                     });
                 }
                 
-                // 💡 접속자 수 UI 업데이트
                 document.getElementById('player-count').innerText = `현재 접속자: ${count} / 5명`;
                 document.getElementById('players-display').innerHTML = displayHtml;
             });
