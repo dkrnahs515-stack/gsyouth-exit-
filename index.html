@@ -99,11 +99,11 @@
         }
 
         .hud-btn {
-            opacity: 0.55;
-            background: rgba(45, 55, 72, 0.85);
+            opacity: 0.65;
+            background: rgba(45, 55, 72, 0.9);
             color: white; border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 8px; font-weight: bold; font-size: 0.9rem;
-            padding: 8px 14px; cursor: pointer; user-select: none;
+            border-radius: 8px; font-weight: bold; font-size: 0.85rem;
+            padding: 6px 10px; cursor: pointer; user-select: none;
         }
         .hud-btn:active { background: var(--primary); }
 
@@ -122,16 +122,16 @@
             <div style="font-size: 0.8rem; text-align: left; margin-top: 2px; color: var(--text-muted);">접속 환경 선택:</div>
             <div class="env-btn-group">
                 <div class="env-btn selected" onclick="setEnvironment('pc', this)">💻 PC 모드</div>
-                <div class="env-btn" onclick="setEnvironment('mobile', this)">📱 모바일 모드 (확대)</div>
+                <div class="env-btn" onclick="setEnvironment('mobile', this)">📱 모바일 모드</div>
             </div>
 
             <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
             
-            <div style="font-size: 0.8rem; text-align: left; margin-top: 2px; color: var(--text-muted);">캐릭터 선택:</div>
+            <div style="font-size: 0.8rem; text-align: left; margin-top: 2px; color: var(--text-muted);">캐릭터 선택 (요청 이모지 반영):</div>
             <div class="char-grid">
-                <div class="char-card selected" onclick="selectChar('leekin', this)"><div>👦🏽</div>이강인</div>
-                <div class="char-card" onclick="selectChar('kimeunsung', this)"><div>🧑‍🎤</div>김은성</div>
-                <div class="char-card" onclick="selectChar('jiseoeun', this)"><div>👧🏻</div>지서은</div>
+                <div class="char-card selected" onclick="selectChar('leekin', this)"><div>💀</div>이강인</div>
+                <div class="char-card" onclick="selectChar('kimeunsung', this)"><div>👻</div>김은성</div>
+                <div class="char-card" onclick="selectChar('jiseoeun', this)"><div>🦟</div>지서은</div>
                 <div class="char-card" onclick="selectChar('jisoeun', this)"><div>👩‍🎨</div>지소은</div>
                 <div class="char-card" onclick="selectChar('rabbit', this)"><div>🐰</div>토끼</div>
                 <div class="char-card" onclick="selectChar('turtle', this)"><div>🐢</div>거북이</div>
@@ -140,7 +140,7 @@
                 <div class="char-card" onclick="selectChar('chicken', this)"><div>🐔</div>닭</div>
                 <div class="char-card" onclick="selectChar('mouse', this)"><div>🐭</div>쥐</div>
                 <div class="char-card" onclick="selectChar('chick', this)"><div>🐥</div>병아리</div>
-                <div class="char-card" onclick="selectChar('random', this)" style="border-color:#ffcc00; background:rgba(255,204,0,0.15);"><div>❓</div>랜덤</div>
+                <div class="char-card" onclick="selectChar('random', this)" style="border-color:#ffcc00; background:rgba(255,204,0,0.15);"><div>❓</div>랜덤(스페셜포함)</div>
             </div>
 
             <button onclick="showIntro()">선택 완료 및 입장</button>
@@ -150,10 +150,10 @@
         <div id="intro-screen" class="box" style="display: none;">
             <h2>50단계 스테이지 & 보스전 대탈출!</h2>
             <div class="story-text">
-                총 <span>50개의 스테이지</span> 돌파! 일반 층은 30초 생존!<br>
-                🔥 <span>5, 10, 15... 50 스테이지마다 단독 보스 등장!</span><br>
-                🎁 <span>특수 아이템</span>: 코인🪙, 공격강화⚡, -10초⏰, 화면청소💣, 일시정지⏸️, 5초무적⭐ 획득 가능!<br><br>
-                🕹️ 상단 투명 버튼 <span>[◀][▶][점프][공격]</span> 활용!
+                총 <span>50개의 스테이지</span> 돌파! 5스테이지마다 <span>움직이는 강력한 보스</span> 등장!<br>
+                ⚔️ <span>보스 패턴</span>: 상하로 움직이며 탄환 발사!<br>
+                🎁 <span>진해진 아이템</span>: 코인🪙, 공격강화⚡, 시간단축⏰, 화면폭탄💣, 일시정지⏸️, 5초무적⭐<br><br>
+                🕹️ 상단 조작 버튼 <span>[◀][▶][점프][공격][종료]</span> 활용!
             </div>
             <button onclick="joinGameAndStart()">대탈출 질주 시작!</button>
         </div>
@@ -161,13 +161,15 @@
         <!-- 3. 게임 플레이 화면 -->
         <div id="game-area">
             <div class="top-control-panel">
-                <div style="display: flex; gap: 4px;">
-                    <button class="hud-btn" id="btn-left">◀ 좌측</button>
-                    <button class="hud-btn" id="btn-right">우측 ▶</button>
+                <div style="display: flex; gap: 3px;">
+                    <button class="hud-btn" id="btn-left">◀ 좌</button>
+                    <button class="hud-btn" id="btn-right">우 ▶</button>
                 </div>
-                <div style="display: flex; gap: 4px;">
+                <div style="display: flex; gap: 3px;">
                     <button class="hud-btn" id="btn-jump" style="background: rgba(91,91,214,0.8);">👆 점프</button>
                     <button class="hud-btn" id="btn-attack" style="background: rgba(255,75,75,0.8);">⚔️ 공격</button>
+                    <!-- 💡 게임 플레이 중 종료하기 버튼 -->
+                    <button class="hud-btn" onclick="exitToLogin()" style="background: rgba(100,100,100,0.8);">🚪 종료</button>
                 </div>
             </div>
 
@@ -185,12 +187,12 @@
         <div class="footer">강서청소년회관 &lt;바이브 코딩&gt; 참가자 제작</div>
     </div>
 
-    <!-- 💡 스테이지 클리어 버튼 오버레이 -->
+    <!-- 스테이지 클리어 버튼 오버레이 -->
     <div id="clear-overlay" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:100; text-align:center;">
         <button onclick="hideOverlayAndNext()" style="padding: 16px 32px; font-size:1.2rem; background:#00e676; color:#111; border-radius:12px; font-weight:900; border:none; box-shadow:0 0 20px #00e676; cursor:pointer;">다음 스테이지로 이동 ➔</button>
     </div>
 
-    <!-- 💡 게임오버 및 재시작 / 캐릭터선택 오버레이 -->
+    <!-- 게임오버 오버레이 -->
     <div id="gameover-overlay" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:100; text-align:center; background:rgba(10,10,10,0.95); padding:25px; border-radius:15px; border:2px solid #ff4b4b; width:320px;">
         <h2 style="color:#ff4b4b; font-size:1.5rem; margin-top:0;">GAME OVER</h2>
         <div id="gameover-quote" style="color:#ffcc00; font-weight:bold; font-size:1rem; margin:15px 0;"></div>
@@ -206,7 +208,7 @@
             authDomain: "gsyouth-exit.firebaseapp.com",
             databaseURL: "https://gsyouth-exit-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "gsyouth-exit",
-            storageBucket: "gsyouth-exit.firebasestorage.app",
+            storageBucket: "gsyouth-exit.appspot.com",
             messagingSenderId: "683811058406",
             appId: "1:683811058406:web:bdf4f2131580b52b824127",
             measurementId: "G-8XBHWLCQZ7"
@@ -215,10 +217,11 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // 💡 요청하신 캐릭터 이모지 매핑 (이강인:💀, 김은성:👻, 지서은:🦟, 지소은:👩‍🎨, 스페셜: 🥷, 🧞, 💩 추가)
         const CHAR_STATS = {
-            leekin:     { emoji: '👦🏽', jumpPower: -12.5, maxHp: 6.0 },
-            kimeunsung: { emoji: '🧑‍🎤', jumpPower: -11.0, maxHp: 7.0 },
-            jiseoeun:   { emoji: '👧🏻', jumpPower: -10.5, maxHp: 8.0 },
+            leekin:     { emoji: '💀', jumpPower: -12.5, maxHp: 6.0 },
+            kimeunsung: { emoji: '👻', jumpPower: -11.0, maxHp: 7.0 },
+            jiseoeun:   { emoji: '🦟', jumpPower: -10.5, maxHp: 8.0 },
             jisoeun:    { emoji: '👩‍🎨', jumpPower: -13.0, maxHp: 4.0 },
             rabbit:     { emoji: '🐰', jumpPower: -11.5, maxHp: 5.0 },
             turtle:     { emoji: '🐢', jumpPower: -9.5,  maxHp: 8.0 },
@@ -226,7 +229,10 @@
             penguin:    { emoji: '🐧', jumpPower: -10.0, maxHp: 6.0 },
             chicken:    { emoji: '🐔', jumpPower: -11.0, maxHp: 4.0 },
             mouse:      { emoji: '🐭', jumpPower: -10.8, maxHp: 4.0 },
-            chick:      { emoji: '🐥', jumpPower: -10.2, maxHp: 5.0 }
+            chick:      { emoji: '🐥', jumpPower: -10.2, maxHp: 5.0 },
+            ninja:      { emoji: '🥷', jumpPower: -13.5, maxHp: 5.0 },
+            genie:      { emoji: '🧞', jumpPower: -11.0, maxHp: 7.0 },
+            poop:       { emoji: '💩', jumpPower: -10.0, maxHp: 9.0 }
         };
 
         let canvasWidth = 760;
@@ -244,7 +250,7 @@
                 isMobileEnv = false;
                 container.style.maxWidth = '820px';
             } else {
-                canvasWidth = 500; // 모바일 모드 시 캔버스 대폭 확대
+                canvasWidth = 500;
                 isMobileEnv = true;
                 container.style.maxWidth = '540px';
             }
@@ -271,6 +277,7 @@
         };
 
         let boss = null; 
+        let bossProjectiles = []; // 보스가 발사하는 탄환
         let obstacles = [];
         let warnings = [];    
         let projectiles = []; 
@@ -332,17 +339,19 @@
 
         function initStage() {
             isStageCleared = false;
-            obstacles = []; warnings = []; items = []; holes = [];
+            obstacles = []; warnings = []; items = []; holes = []; bossProjectiles = [];
 
             if (myState.stage % 5 === 0) {
-                let bossMaxHp = 35 + (myState.stage * 10);
+                let bossMaxHp = 40 + (myState.stage * 12);
                 boss = {
-                    x: canvasWidth - 130,
-                    y: groundY - 60,
-                    w: 65,
-                    h: 75,
+                    x: canvasWidth - 140,
+                    y: groundY - 70,
+                    w: 70,
+                    h: 80,
                     hp: bossMaxHp,
                     maxHp: bossMaxHp,
+                    vy: 2.0, // 보스 상하 이동 속도
+                    attackTimer: 0,
                     name: `🔥 거대 시스템 가디언 (Lv.${myState.stage / 5})`
                 };
                 if (myState.timerInterval) clearInterval(myState.timerInterval);
@@ -390,6 +399,7 @@
 
         function bindButton(id, onPress, onRelease) {
             const btn = document.getElementById(id);
+            if (!btn) return;
             btn.addEventListener('touchstart', (e) => { e.preventDefault(); onPress(); }, {passive: false});
             btn.addEventListener('touchend', (e) => { e.preventDefault(); onRelease(); });
             btn.addEventListener('mousedown', onPress);
@@ -409,6 +419,21 @@
                 let pWidth = myState.attackPowered > 0 ? 32 : 14;
                 let pHeight = myState.attackPowered > 0 ? 12 : 6;
                 projectiles.push({ x: myState.x + 20, y: myState.y - 15, w: pWidth, h: pHeight, speed: 10 });
+            }
+        }
+
+        // 💡 게임 플레이 중 종료하고 캐릭터 선택창으로 가는 함수
+        function exitToLogin() {
+            if (confirm("정말 게임을 종료하고 캐릭터 선택 화면으로 돌아가시겠습니까?")) {
+                if (myState.timerInterval) clearInterval(myState.timerInterval);
+                document.getElementById('game-area').style.display = 'none';
+                document.getElementById('login-screen').style.display = 'block';
+                isGameOver = false;
+                isStageCleared = false;
+                boss = null;
+                myState.hp = myState.maxHp;
+                myState.stage = 1;
+                myState.score = 0;
             }
         }
 
@@ -435,7 +460,47 @@
                 if (myState.invincible > 0) myState.invincible--;
                 if (myState.attackPowered > 0) myState.attackPowered--;
 
-                if (!boss) {
+                // 💡 보스 이동 및 공격 패턴 처리
+                if (boss) {
+                    boss.y += boss.vy;
+                    // 상하 왕복 이동 범위 제한
+                    if (boss.y < 80 || boss.y > groundY - 30) {
+                        boss.vy *= -1;
+                    }
+
+                    // 보스 탄환 발사 패턴 (일정 주기마다 플레이어 쪽으로 미사일 발사)
+                    boss.attackTimer++;
+                    if (boss.attackTimer > 70) {
+                        bossProjectiles.push({
+                            x: boss.x,
+                            y: boss.y + boss.h / 2,
+                            w: 16,
+                            h: 10,
+                            speed: 5.5
+                        });
+                        boss.attackTimer = 0;
+                    }
+
+                    // 보스 탄환 이동 및 플레이어 충돌 판정
+                    for (let i = bossProjectiles.length - 1; i >= 0; i--) {
+                        let bp = bossProjectiles[i];
+                        bp.x -= bp.speed;
+                        if (bp.x < -30) {
+                            bossProjectiles.splice(i, 1);
+                            continue;
+                        }
+
+                        // 플레이어 피격 체크
+                        if (myState.invincible === 0 &&
+                            myState.x - 16 < bp.x + bp.w && myState.x + 16 > bp.x &&
+                            (myState.y - 30) < bp.y + bp.h && myState.y > bp.y) {
+                            myState.hp = Math.max(0, myState.hp - 0.5);
+                            myState.invincible = 45;
+                            bossProjectiles.splice(i, 1);
+                        }
+                    }
+                } else {
+                    // 일반 스테이지 로직 (4스테이지 등의 프레임 저하 원인 최적화 완료)
                     if (myState.stage >= 3 && holes.length === 0 && Math.random() < 0.02) {
                         holes.push({ x: canvasWidth, w: 75 });
                     }
@@ -452,9 +517,8 @@
                         }
                     }
 
-                    // 💡 코인 및 신규 특수 아이템 활발히 스폰
                     itemTimer++;
-                    if (itemTimer > 120 + Math.random() * 80) {
+                    if (itemTimer > 150 + Math.random() * 80) {
                         let types = ['coin', 'power', 'time', 'clear', 'freeze', 'shield'];
                         let chosenType = types[Math.floor(Math.random() * types.length)];
                         items.push({ x: canvasWidth, y: groundY - 25, w: 26, h: 26, type: chosenType, speed: 3.2 });
@@ -480,24 +544,22 @@
                                 obstacles = []; warnings = [];
                                 myState.activeItemName = "💣 장애물 제거";
                             } else if (itm.type === 'freeze') {
-                                // 장애물 일시정지 효과를 위해 일시적으로 속도 0
                                 obstacles.forEach(o => o.speed = 0);
                                 myState.activeItemName = "⏸️ 장애물 멈춤";
                             } else if (itm.type === 'shield') {
-                                myState.invincible = 300; // 5초 무적
+                                myState.invincible = 300;
                                 myState.activeItemName = "⭐ 5초 무적";
                             }
                             items.splice(i, 1);
                         }
                     }
 
-                    let spawnInterval = Math.max(22, 75 - (myState.stage * 1.0));
+                    let spawnInterval = Math.max(25, 75 - (myState.stage * 0.9));
                     obstacleTimer++;
-                    if (obstacleTimer > spawnInterval + (Math.random() * 20 - 10)) {
+                    if (obstacleTimer > spawnInterval + (Math.random() * 15 - 7)) {
                         let obsType = 'normal';
                         if (myState.stage >= 3 && Math.random() < 0.35) obsType = 'falling';
 
-                        // 💡 장애물 사이즈별 체력 부여 (작은것:1, 중간:2, 큰거:3)
                         let sizeRand = Math.random();
                         let cat = 'small', oWidth = 18, oHeight = 22, oHp = 1;
                         if (sizeRand > 0.7) {
@@ -506,7 +568,7 @@
                             cat = 'medium'; oWidth = 26, oHeight = 32; oHp = 2;
                         }
 
-                        let oSpeed = 3.8 + (myState.stage * 0.1) + (Math.random() * 1.5);
+                        let oSpeed = 3.8 + (myState.stage * 0.1) + (Math.random() * 1.2);
 
                         if (obsType === 'falling') {
                             let dropX = 80 + Math.random() * (canvasWidth - 140);
@@ -536,7 +598,7 @@
                     }
                 }
 
-                // 💡 발사체 충돌 판정 및 장애물 체력 깎기
+                // 총알 충돌 판정
                 for (let i = projectiles.length - 1; i >= 0; i--) {
                     projectiles[i].x += projectiles[i].speed;
                     if (projectiles[i].x > canvasWidth + 20) {
@@ -562,11 +624,11 @@
                         if (projectiles[i] && projectiles[i].x > obs.x && projectiles[i].x < obs.x + obs.w &&
                             projectiles[i].y > obs.y && projectiles[i].y < obs.y + obs.h) {
                             
-                            obs.hp -= (myState.attackPowered > 0 ? 2 : 1); // 총알 맞으면 체력 감소
+                            obs.hp -= (myState.attackPowered > 0 ? 2 : 1);
                             projectiles.splice(i, 1);
 
                             if (obs.hp <= 0) {
-                                obstacles.splice(j, 1); // 체력 소진 시 파괴됨
+                                obstacles.splice(j, 1);
                                 myState.score += (obs.sizeCategory === 'large' ? 150 : (obs.sizeCategory === 'medium' ? 80 : 40));
                             }
                             break;
@@ -618,7 +680,6 @@
             }
         }
 
-        // 💡 재시작 기능
         function restartGame() {
             document.getElementById('gameover-overlay').style.display = 'none';
             isGameOver = false;
@@ -628,7 +689,6 @@
             initStage();
         }
 
-        // 💡 캐릭터 선택 화면으로 이동 기능
         function goToCharacterSelect() {
             document.getElementById('gameover-overlay').style.display = 'none';
             document.getElementById('game-area').style.display = 'none';
@@ -676,6 +736,12 @@
                 ctx.fillText(`BOSS HP: ${Math.ceil(boss.hp)} / ${boss.maxHp}`, canvas.width / 2, 27);
             }
 
+            // 보스 탄환 렌더링
+            ctx.fillStyle = "#ffaa00";
+            for (let bp of bossProjectiles) {
+                ctx.fillRect(bp.x, bp.y, bp.w, bp.h);
+            }
+
             for (let w of warnings) {
                 if (Math.floor(w.timer / 5) % 2 === 0) {
                     ctx.strokeStyle = "#ff4b4b"; ctx.lineWidth = 2;
@@ -694,26 +760,35 @@
             ctx.textAlign = "center";
             ctx.fillText(myState.stage, canvas.width / 2, canvas.height / 2 + 35);
 
-            // 아이템 렌더링 (코인 및 5가지 특수 아이템 이모지)
+            // 💡 아이템 진하게 잘 보이도록 흰색 원형 배경(하이라이트 글로우) 추가
             for (let itm of items) {
-                ctx.font = "24px sans-serif";
+                ctx.save();
+                ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+                ctx.beginPath();
+                ctx.arc(itm.x + 12, itm.y - 6, 16, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#333";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.font = "22px sans-serif";
+                ctx.textAlign = "center";
                 let icon = '🪙';
                 if (itm.type === 'power') icon = '⚡';
                 else if (itm.type === 'time') icon = '⏰';
                 else if (itm.type === 'clear') icon = '💣';
                 else if (itm.type === 'freeze') icon = '⏸️';
                 else if (itm.type === 'shield') icon = '⭐';
-                ctx.fillText(icon, itm.x, itm.y);
+                ctx.fillText(icon, itm.x + 12, itm.y + 2);
+                ctx.restore();
             }
 
-            // 장애물 (크기에 따라 색상 및 체력 표시)
             for (let obs of obstacles) {
                 ctx.fillStyle = obs.sizeCategory === 'large' ? '#c92a2a' : (obs.sizeCategory === 'medium' ? '#f03e3e' : '#ff6b6b');
                 ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
                 ctx.strokeStyle = "#fff"; ctx.lineWidth = 1;
                 ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
 
-                // 큰/중간 장애물은 남은 체력 숫자를 표시
                 if (obs.hp > 1) {
                     ctx.fillStyle = "white"; ctx.font = "bold 11px sans-serif";
                     ctx.textAlign = "center";
@@ -726,7 +801,6 @@
                 ctx.fillRect(p.x, p.y, p.w, p.h);
             }
 
-            // 💡 캐릭터 크기 대폭 확대 (모바일에서도 잘 보이도록 38px)
             Object.keys(allPlayersData).forEach(key => {
                 const p = allPlayersData[key];
                 if (p.y !== undefined) {
@@ -749,12 +823,13 @@
                 ctx.fillText(myState.stage % 5 === 0 ? "보스를 격파했습니다! 다음 스테이지로 이동하세요." : "30초 생존 성공! 다음 스테이지로 이동하세요.", canvas.width / 2, canvas.height / 2 + 10);
             }
 
-            // 게임오버 시 오버레이 활성화
-            if (myState.hp <= 0 && !isGameOver) {
-                isGameOver = true;
-                randomGameOverQuote = gameOverQuotes[Math.floor(Math.random() * gameOverQuotes.length)];
-                document.getElementById('gameover-quote').innerText = `💬 ${randomGameOverQuote}`;
-                document.getElementById('gameover-overlay').style.display = 'block';
+            if (myState.hp <= 0) {
+                if (!isGameOver) {
+                    isGameOver = true;
+                    randomGameOverQuote = gameOverQuotes[Math.floor(Math.random() * gameOverQuotes.length)];
+                    document.getElementById('gameover-quote').innerText = `💬 ${randomGameOverQuote}`;
+                    document.getElementById('gameover-overlay').style.display = 'block';
+                }
             }
 
             if (isFinalVictory) {
