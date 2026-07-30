@@ -3,75 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>강서청소년회관 방탈출 : 실시간 동기화</title>
+    <title>강서청소년회관 방탈출 : 실시간 멀티 탐색</title>
     
-    <!-- Firebase SDK 로드 (호환성 버전) -->
+    <!-- Firebase SDK 로드 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <!-- Analytics(선택사항) 로드를 원할 경우 아래 스크립트 추가 가능하지만, 필수 기능이 아니므로 제외하여 가볍게 유지합니다. -->
 
     <style>
-        :root { --bg-dark: #121212; --primary: #ff5e62; --primary-glow: #ff9966; --text-main: #f0f0f0; --panel: #1e1e1e; }
-        body { margin: 0; background: var(--bg-dark); color: var(--text-main); font-family: 'Pretendard', sans-serif; text-align: center; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-        h1 { color: var(--primary); }
-        .box { background: var(--panel); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
-        input, select { width: 90%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #444; background: #333; color: white; font-size: 1rem; }
-        button { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary), var(--primary-glow)); color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:active { transform: scale(0.98); }
-        .player-list { display: flex; flex-direction: column; gap: 10px; text-align: left; }
-        .player-item { padding: 10px; background: #333; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
-        .ready { color: #00e676; font-weight: bold; }
+        :root {
+            --bg-dark: #0a0a0a;
+            --panel-bg: #1a1c23;
+            --primary: #ff5e62;
+            --primary-glow: #ff9966;
+            --text-main: #f0f0f0;
+            --text-muted: #888;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Pretendard', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 { color: var(--primary-glow); margin: 5px 0 15px; font-size: 1.5rem; text-align: center; }
         
-        /* 접속자 수 카운터 스타일 */
-        .count-badge {
-            display: inline-block;
-            background: rgba(255, 153, 102, 0.2);
-            color: var(--primary-glow);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 15px;
-            border: 1px solid var(--primary-glow);
+        .box {
+            background: var(--panel-bg);
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #333;
+            text-align: center;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border: 1px solid #444;
+            background: #252830;
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--primary-glow));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 🗺️ 메인 스테이지 캔버스 & 맵 */
+        #game-area {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .status-bar {
+            width: 100%;
+            max-width: 360px;
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+
+        #map-canvas {
+            width: 360px;
+            height: 360px;
+            background: #15171e;
+            border: 3px solid #333;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        /* 🎮 가상 패드 */
+        .d-pad {
+            display: grid;
+            grid-template-columns: 50px 50px 50px;
+            grid-template-rows: 45px 45px;
+            gap: 5px;
+            margin-top: 15px;
+        }
+
+        .d-btn {
+            background: #2a2d37;
+            color: white;
+            border: 2px solid #444;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .d-btn:active, .d-btn.pressed { background: var(--primary); border-color: #fff; }
+        .d-btn.up { grid-column: 2; grid-row: 1; }
+        .d-btn.left { grid-column: 1; grid-row: 2; }
+        .d-btn.down { grid-column: 2; grid-row: 2; }
+        .d-btn.right { grid-column: 3; grid-row: 2; }
+
+        .footer {
+            margin-top: auto;
+            padding: 10px 0;
+            color: var(--text-muted);
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>자정의 메아리</h1>
-        
-        <!-- 1. 접속 화면 -->
+        <h1>자정의 메아리 : 자율 탐색</h1>
+
+        <!-- 1. 로그인 (인원수 제한 없음) -->
         <div id="login-screen" class="box">
-            <h2>역할 선택 및 접속</h2>
-            <input type="text" id="player-name" placeholder="이름을 입력하세요" required>
-            <select id="player-role">
-                <option value="p1">온에어 디렉터 (3층)</option>
-                <option value="p2">행정 마스터 (2층)</option>
-                <option value="p3">아지트 탐험가 (지하)</option>
-                <option value="p4">AI 제어자 (1층)</option>
-                <option value="p5">스마트짐 마스터 (최종)</option>
-            </select>
-            <button onclick="joinGame()">접속하기</button>
+            <h3>탐색원 등록</h3>
+            <p style="font-size: 0.9rem; color: #aaa;">이름을 입력하면 캐릭터가 자동 배정됩니다.<br>(1인 단독 플레이 가능)</p>
+            <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
+            <button onclick="joinGame()">탐색 시작하기</button>
         </div>
 
-        <!-- 2. 대기실 화면 (동기화) -->
-        <div id="lobby-screen" class="box" style="display: none;">
-            <h2>실시간 참가자 현황</h2>
-            
-            <div class="count-badge" id="player-count">현재 접속자: 0 / 5명</div>
-
-            <div class="player-list" id="players-display">
-                <!-- 참가자 목록이 실시간으로 갱신되는 영역 -->
+        <!-- 2. 실시간 멀티플레이 맵 화면 -->
+        <div id="game-area">
+            <div class="status-bar">
+                <span id="my-info">내 캐릭터: -</span>
+                <span id="online-count" style="color:var(--primary-glow);">접속자: 0명</span>
             </div>
-            <br>
-            <button id="ready-btn" onclick="toggleReady()">준비 완료</button>
+
+            <!-- 모두가 공유하는 2D 캔버스 맵 -->
+            <canvas id="map-canvas" width="360" height="360"></canvas>
+
+            <!-- 방향 컨트롤러 -->
+            <div class="d-pad">
+                <button class="d-btn up" id="btn-w">W</button>
+                <button class="d-btn left" id="btn-a">A</button>
+                <button class="d-btn down" id="btn-s">S</button>
+                <button class="d-btn right" id="btn-d">D</button>
+            </div>
         </div>
+
+        <div class="footer">강서청소년회관 &lt;바이브 코딩&gt; 참가자 제작</div>
     </div>
 
     <script>
-        // 제공해주신 Firebase 설정값 반영 완료
+        // 제공된 Firebase 설정값
         const firebaseConfig = {
             apiKey: "AIzaSyAVtGfRyA9CaKXU2Ol5sfLA0gK2k4gXn5A",
             authDomain: "gsyouth-exit.firebaseapp.com",
@@ -83,68 +192,196 @@
             measurementId: "G-8XBHWLCQZ7"
         };
 
-        // Firebase 초기화
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let myRole = ""; 
-        let isReady = false;
+        // 🎨 랜덤 배정을 위한 캐릭터 설정 풀
+        const SHAPE_POOL = [
+            { shape: 'circle', color: '#ff4d4d', name: '동그라미' },
+            { shape: 'rect', color: '#4dabf7', name: '네모' },
+            { shape: 'triangle', color: '#00e676', name: '세모' },
+            { shape: 'pentagon', color: '#ffd43b', name: '오각형' },
+            { shape: 'star', color: '#cc5de8', name: '별' }
+        ];
+
+        let myId = ""; // 서버에서 자동 발급받는 고유 ID
+        let myName = "";
+        let myPos = { x: 180, y: 180 }; // 중앙 스폰
+        let allPlayersData = {};
+        const speed = 4;
+        const keys = { w: false, a: false, s: false, d: false };
+
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
 
         function joinGame() {
-            const name = document.getElementById('player-name').value.trim();
-            myRole = document.getElementById('player-role').value;
+            myName = document.getElementById('player-name').value.trim();
+            if (!myName) return alert("이름을 입력해주세요.");
 
-            if (!name) return alert("이름을 입력해주세요.");
+            // 랜덤 캐릭터 부여
+            const randomChar = SHAPE_POOL[Math.floor(Math.random() * SHAPE_POOL.length)];
 
-            // 내 정보를 데이터베이스에 쓰기
-            db.ref('gameRoom/players/' + myRole).set({
-                name: name,
-                ready: false
+            // 💡 고정된 역할(p1, p2) 대신 서버에서 유니크 ID를 새로 생성하여 할당
+            const playerRef = db.ref('gameRoom/players').push();
+            myId = playerRef.key;
+
+            playerRef.set({
+                name: myName,
+                x: myPos.x,
+                y: myPos.y,
+                color: randomChar.color,
+                shape: randomChar.shape
             });
 
-            // 화면 전환
+            // 내가 창을 닫으면 서버에서 내 캐릭터 정보 자동 삭제
+            playerRef.onDisconnect().remove();
+
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('lobby-screen').style.display = 'block';
+            document.getElementById('game-area').style.display = 'flex';
+            
+            document.getElementById('my-info').innerHTML = `내 캐릭터: <span style="color:${randomChar.color}">${randomChar.name}</span>`;
 
-            // 동기화 시작
-            startSync();
+            startMultiplayer();
         }
 
-        function startSync() {
-            const playersRef = db.ref('gameRoom/players');
-            
-            playersRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                let displayHtml = "";
-                let count = 0;
-                
-                if (data) {
-                    count = Object.keys(data).length;
-                    
-                    Object.keys(data).forEach(key => {
-                        const p = data[key];
-                        const status = p.ready ? "<span class='ready'>[준비 완료]</span>" : "[대기 중]";
-                        displayHtml += `<div class="player-item">
-                            <span><strong>${p.name}</strong> (${key})</span>
-                            ${status}
-                        </div>`;
-                    });
+        function startMultiplayer() {
+            // 1. 서버에서 접속한 모든 사람들의 위치를 실시간 수신
+            db.ref('gameRoom/players').on('value', (snapshot) => {
+                allPlayersData = snapshot.val() || {};
+                const count = Object.keys(allPlayersData).length;
+                document.getElementById('online-count').innerText = `접속자: ${count}명`;
+            });
+
+            // 2. 키보드 및 터치 이벤트 바인딩
+            setupControls();
+
+            // 3. 메인 게임 루프 시작
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- 🕹️ 조작 컨트롤 ---
+        function setupControls() {
+            window.addEventListener('keydown', e => {
+                const k = e.key.toLowerCase();
+                if (['w', 'a', 's', 'd', 'arrowup', 'arrowleft', 'arrowdown', 'arrowright'].includes(k)) {
+                    if (k === 'w' || k === 'arrowup') keys.w = true;
+                    if (k === 'a' || k === 'arrowleft') keys.a = true;
+                    if (k === 's' || k === 'arrowdown') keys.s = true;
+                    if (k === 'd' || k === 'arrowright') keys.d = true;
                 }
-                
-                document.getElementById('player-count').innerText = `현재 접속자: ${count} / 5명`;
-                document.getElementById('players-display').innerHTML = displayHtml;
+            });
+
+            window.addEventListener('keyup', e => {
+                const k = e.key.toLowerCase();
+                if (k === 'w' || k === 'arrowup') keys.w = false;
+                if (k === 'a' || k === 'arrowleft') keys.a = false;
+                if (k === 's' || k === 'arrowdown') keys.s = false;
+                if (k === 'd' || k === 'arrowright') keys.d = false;
+            });
+
+            bindVirtualBtn('btn-w', 'w');
+            bindVirtualBtn('btn-a', 'a');
+            bindVirtualBtn('btn-s', 's');
+            bindVirtualBtn('btn-d', 'd');
+        }
+
+        function bindVirtualBtn(id, keyName) {
+            const btn = document.getElementById(id);
+            const press = (e) => { e.preventDefault(); keys[keyName] = true; btn.classList.add('pressed'); };
+            const release = (e) => { e.preventDefault(); keys[keyName] = false; btn.classList.remove('pressed'); };
+            btn.addEventListener('touchstart', press, { passive: false });
+            btn.addEventListener('touchend', release);
+            btn.addEventListener('mousedown', press);
+            btn.addEventListener('mouseup', release);
+            btn.addEventListener('mouseleave', release);
+        }
+
+        // --- 🔄 메인 프레임 루프 ---
+        let lastMoveTime = 0;
+
+        function gameLoop() {
+            let moved = false;
+
+            if (keys.w && myPos.y > 15) { myPos.y -= speed; moved = true; }
+            if (keys.s && myPos.y < 345) { myPos.y += speed; moved = true; }
+            if (keys.a && myPos.x > 15) { myPos.x -= speed; moved = true; }
+            if (keys.d && myPos.x < 345) { myPos.x += speed; moved = true; }
+
+            // 내가 움직였으면 Firebase 서버로 내 고유 ID에 해당하는 좌표 업데이트
+            if (moved && Date.now() - lastMoveTime > 30) {
+                db.ref('gameRoom/players/' + myId).update({
+                    x: myPos.x,
+                    y: myPos.y
+                });
+                lastMoveTime = Date.now();
+            }
+
+            drawMap();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- 🎨 캔버스에 맵 및 캐릭터 그리기 ---
+        function drawMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. 강서청소년회관 구역 표시 (배경 십자선)
+            ctx.strokeStyle = "#2e3240";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(180, 0); ctx.lineTo(180, 360);
+            ctx.moveTo(0, 180); ctx.lineTo(360, 180);
+            ctx.stroke();
+
+            ctx.fillStyle = "#444a5e";
+            ctx.font = "12px sans-serif";
+            ctx.fillText("3층 청다방", 10, 20);
+            ctx.fillText("2층 사무실", 290, 20);
+            ctx.fillText("지하 아지트", 10, 350);
+            ctx.fillText("1층 FUNGYM", 280, 350);
+
+            // 2. 서버에 등록된 모든 플레이어 그리기 (접속 인원수 무관)
+            Object.keys(allPlayersData).forEach(key => {
+                const p = allPlayersData[key];
+                drawShape(p.x, p.y, p.color, p.shape);
+
+                // 이름 표시
+                ctx.fillStyle = "white";
+                ctx.font = "bold 11px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(p.name, p.x, p.y - 18);
             });
         }
 
-        function toggleReady() {
-            isReady = !isReady;
-            db.ref('gameRoom/players/' + myRole).update({
-                ready: isReady
-            });
-            
-            const btn = document.getElementById('ready-btn');
-            btn.innerText = isReady ? "준비 취소" : "준비 완료";
-            btn.style.background = isReady ? "#444" : "linear-gradient(45deg, var(--primary), var(--primary-glow))";
+        // --- 📐 도형 렌더링 함수 ---
+        function drawShape(x, y, color, shape) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+
+            if (shape === 'circle') {
+                ctx.arc(x, y, 12, 0, Math.PI * 2);
+            } else if (shape === 'rect') {
+                ctx.rect(x - 12, y - 12, 24, 24);
+            } else if (shape === 'triangle') {
+                ctx.moveTo(x, y - 14); ctx.lineTo(x - 12, y + 10); ctx.lineTo(x + 12, y + 10); ctx.closePath();
+            } else if (shape === 'pentagon') {
+                for (let i = 0; i < 5; i++) {
+                    const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
+                    const px = x + 13 * Math.cos(angle);
+                    const py = y + 13 * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+            } else if (shape === 'star') {
+                for (let i = 0; i < 5; i++) {
+                    ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * 14 + x, -Math.sin((18 + i * 72) * Math.PI / 180) * 14 + y);
+                    ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * 6 + x, -Math.sin((54 + i * 72) * Math.PI / 180) * 6 + y);
+                }
+                ctx.closePath();
+            }
+            ctx.fill();
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
         }
     </script>
 </body>
