@@ -5,28 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>강서청소년회관 방탈출 : 실시간 동기화</title>
     
-    <!-- Firebase SDK 로드 (호환성 버전) -->
+    <!-- Firebase SDK 로드 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <style>
-        :root { --bg-dark: #121212; --primary: #ff5e62; --text-main: #f0f0f0; --panel: #1e1e1e; }
+        :root { --bg-dark: #121212; --primary: #ff5e62; --primary-glow: #ff9966; --text-main: #f0f0f0; --panel: #1e1e1e; }
         body { margin: 0; background: var(--bg-dark); color: var(--text-main); font-family: 'Pretendard', sans-serif; text-align: center; padding: 20px; }
         .container { max-width: 500px; margin: 0 auto; }
         h1 { color: var(--primary); }
         .box { background: var(--panel); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #333; }
         input, select { width: 90%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #444; background: #333; color: white; font-size: 1rem; }
-        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; }
+        button { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--primary), var(--primary-glow)); color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
         button:active { transform: scale(0.98); }
         .player-list { display: flex; flex-direction: column; gap: 10px; text-align: left; }
-        .player-item { padding: 10px; background: #333; border-radius: 6px; display: flex; justify-content: space-between; }
+        .player-item { padding: 10px; background: #333; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; }
         .ready { color: #00e676; font-weight: bold; }
+        
+        /* 접속자 수 카운터 스타일 */
+        .count-badge {
+            display: inline-block;
+            background: rgba(255, 153, 102, 0.2);
+            color: var(--primary-glow);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            border: 1px solid var(--primary-glow);
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>자정의 메아리 (동기화 테스트)</h1>
+        <h1>자정의 메아리</h1>
         
         <!-- 1. 접속 화면 -->
         <div id="login-screen" class="box">
@@ -45,6 +58,10 @@
         <!-- 2. 대기실 화면 (동기화) -->
         <div id="lobby-screen" class="box" style="display: none;">
             <h2>실시간 참가자 현황</h2>
+            
+            <!-- 💡 실시간 접속자 수 표시 영역 추가 -->
+            <div class="count-badge" id="player-count">현재 접속자: 0 / 5명</div>
+
             <div class="player-list" id="players-display">
                 <!-- 참가자 목록이 실시간으로 갱신되는 영역 -->
             </div>
@@ -54,15 +71,15 @@
     </div>
 
     <script>
-        // 🚨 중요: 여기에 본인의 Firebase 설정값을 붙여넣으세요!
+        // 🚨 중요: 여기에 본인의 Firebase 설정값을 다시 붙여넣으세요!
         const firebaseConfig = {
-            apiKey: "AIzaSyAVtGfRyA9CaKXU2Ol5sfLA0gK2k4gXn5A",
-            authDomain: "gsyouth-exit.firebaseapp.com",
-            databaseURL: "https://gsyouth-exit-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "gsyouth-exit",
-            storageBucket: "gsyouth-exit.firebasestorage.app.appspot.com",
-            messagingSenderId: "683811058406",
-            appId: "1:683811058406:web:bdf4f2131580b52b824127"
+            apiKey: "본인의_API_KEY",
+            authDomain: "본인의_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://본인의_PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "본인의_PROJECT_ID",
+            storageBucket: "본인의_PROJECT_ID.appspot.com",
+            messagingSenderId: "본인의_SENDER_ID",
+            appId: "본인의_APP_ID"
         };
 
         // Firebase 초기화
@@ -72,62 +89,59 @@
         let myRole = ""; 
         let isReady = false;
 
-        // 1. 게임 접속 함수
         function joinGame() {
             const name = document.getElementById('player-name').value.trim();
             myRole = document.getElementById('player-role').value;
 
             if (!name) return alert("이름을 입력해주세요.");
 
-            // Firebase에 내 정보 쓰기
             db.ref('gameRoom/players/' + myRole).set({
                 name: name,
                 ready: false
             });
 
-            // 화면 전환
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('lobby-screen').style.display = 'block';
 
-            // 실시간 데이터 수신 시작
             startSync();
         }
 
-        // 2. 실시간 동기화 함수
         function startSync() {
             const playersRef = db.ref('gameRoom/players');
             
-            // 데이터베이스의 값이 변경될 때마다 자동으로 실행됨 (핵심 기능)
             playersRef.on('value', (snapshot) => {
                 const data = snapshot.val();
                 let displayHtml = "";
+                let count = 0; // 💡 접속자 수 계산 변수
                 
                 if (data) {
-                    // 서버에 등록된 플레이어들을 화면에 그림
+                    count = Object.keys(data).length; // 등록된 데이터(역할)의 개수를 셈
+                    
                     Object.keys(data).forEach(key => {
                         const p = data[key];
                         const status = p.ready ? "<span class='ready'>[준비 완료]</span>" : "[대기 중]";
                         displayHtml += `<div class="player-item">
-                            <span>${p.name} (${key})</span>
+                            <span><strong>${p.name}</strong> (${key})</span>
                             ${status}
                         </div>`;
                     });
                 }
+                
+                // 💡 접속자 수 UI 업데이트
+                document.getElementById('player-count').innerText = `현재 접속자: ${count} / 5명`;
                 document.getElementById('players-display').innerHTML = displayHtml;
             });
         }
 
-        // 3. 준비 버튼 클릭 (내 상태 변경)
         function toggleReady() {
             isReady = !isReady;
-            // 내 역할의 ready 값을 Firebase에 업데이트
             db.ref('gameRoom/players/' + myRole).update({
                 ready: isReady
             });
             
             const btn = document.getElementById('ready-btn');
             btn.innerText = isReady ? "준비 취소" : "준비 완료";
-            btn.style.background = isReady ? "#444" : "var(--primary)";
+            btn.style.background = isReady ? "#444" : "linear-gradient(45deg, var(--primary), var(--primary-glow))";
         }
     </script>
 </body>
