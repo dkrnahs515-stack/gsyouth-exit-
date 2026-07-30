@@ -129,19 +129,21 @@
 
             <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
             
-            <div style="font-size: 0.8rem; text-align: left; margin-top: 2px; color: var(--text-muted);">캐릭터 선택:</div>
+            <div style="font-size: 0.8rem; text-align: left; margin-top: 2px; color: var(--text-muted);">캐릭터 선택 (사람 4명 + 동물들):</div>
             <div class="char-grid">
+                <!-- 💡 참가자 4명은 사람 이모지 -->
                 <div class="char-card selected" onclick="selectChar('leekin', this)"><div>👦🏽</div>이강인</div>
                 <div class="char-card" onclick="selectChar('kimeunsung', this)"><div>🧑‍🎤</div>김은성</div>
                 <div class="char-card" onclick="selectChar('jiseoeun', this)"><div>👧🏻</div>지서은</div>
                 <div class="char-card" onclick="selectChar('jisoeun', this)"><div>👩‍🎨</div>지소은</div>
-                <div class="char-card" onclick="selectChar('rabbit', this)"><div>🧒</div>토끼인간</div>
-                <div class="char-card" onclick="selectChar('turtle', this)"><div>🧑‍🦱</div>거북이인간</div>
-                <div class="char-card" onclick="selectChar('lion', this)"><div>🧔</div>사자소년</div>
-                <div class="char-card" onclick="selectChar('penguin', this)"><div>👦🏼</div>펭귄소년</div>
-                <div class="char-card" onclick="selectChar('chicken', this)"><div>🧒🏾</div>닭소년</div>
-                <div class="char-card" onclick="selectChar('mouse', this)"><div>👦🏻</div>쥐소년</div>
-                <div class="char-card" onclick="selectChar('chick', this)"><div>👶</div>병아리아이</div>
+                <!-- 💡 나머지 캐릭터들은 기존 동물 이모지 복원 -->
+                <div class="char-card" onclick="selectChar('rabbit', this)"><div>🐰</div>토끼</div>
+                <div class="char-card" onclick="selectChar('turtle', this)"><div>🐢</div>거북이</div>
+                <div class="char-card" onclick="selectChar('lion', this)"><div>🦁</div>사자</div>
+                <div class="char-card" onclick="selectChar('penguin', this)"><div>🐧</div>펭귄</div>
+                <div class="char-card" onclick="selectChar('chicken', this)"><div>🐔</div>닭</div>
+                <div class="char-card" onclick="selectChar('mouse', this)"><div>🐭</div>쥐</div>
+                <div class="char-card" onclick="selectChar('chick', this)"><div>🐥</div>병아리</div>
                 <div class="char-card" onclick="selectChar('random', this)" style="border-color:#ffcc00; background:rgba(255,204,0,0.15);"><div>❓</div>랜덤</div>
             </div>
 
@@ -192,7 +194,7 @@
             authDomain: "gsyouth-exit.firebaseapp.com",
             databaseURL: "https://gsyouth-exit-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "gsyouth-exit",
-            storageBucket: "gsyouth-exit.firebasestorage.app",
+            storageBucket: "gsyouth-exit.appspot.com",
             messagingSenderId: "683811058406",
             appId: "1:683811058406:web:bdf4f2131580b52b824127",
             measurementId: "G-8XBHWLCQZ7"
@@ -202,17 +204,17 @@
         const db = firebase.database();
 
         const CHAR_STATS = {
-            leekin:     { emoji: '⚽', jumpPower: -12.0, maxHp: 6.0 },
-            kimeunsung: { emoji: '🎸', jumpPower: -10.5, maxHp: 7.0 },
-            jiseoeun:   { emoji: '📚', jumpPower: -10.0, maxHp: 8.0 },
-            jisoeun:    { emoji: '🎨', jumpPower: -12.5, maxHp: 4.0 },
-            rabbit:     { emoji: '🧒', jumpPower: -11.5, maxHp: 5.0 },
-            turtle:     { emoji: '🧑‍🦱', jumpPower: -9.5,  maxHp: 8.0 },
-            lion:       { emoji: '🧔', jumpPower: -10.5, maxHp: 5.0 },
-            penguin:    { emoji: '👦🏼', jumpPower: -10.0, maxHp: 6.0 },
-            chicken:    { emoji: '🧒🏾', jumpPower: -11.0, maxHp: 4.0 },
-            mouse:      { emoji: '👦🏻', jumpPower: -10.8, maxHp: 4.0 },
-            chick:      { emoji: '👶', jumpPower: -10.2, maxHp: 5.0 }
+            leekin:     { emoji: '👦🏽', jumpPower: -12.0, maxHp: 6.0 },
+            kimeunsung: { emoji: '🧑‍🎤', jumpPower: -10.5, maxHp: 7.0 },
+            jiseoeun:   { emoji: '👧🏻', jumpPower: -10.0, maxHp: 8.0 },
+            jisoeun:    { emoji: '👩‍🎨', jumpPower: -12.5, maxHp: 4.0 },
+            rabbit:     { emoji: '🐰', jumpPower: -11.5, maxHp: 5.0 },
+            turtle:     { emoji: '🐢', jumpPower: -9.5,  maxHp: 8.0 },
+            lion:       { emoji: '🦁', jumpPower: -10.5, maxHp: 5.0 },
+            penguin:    { emoji: '🐧', jumpPower: -10.0, maxHp: 6.0 },
+            chicken:    { emoji: '🐔', jumpPower: -11.0, maxHp: 4.0 },
+            mouse:      { emoji: '🐭', jumpPower: -10.8, maxHp: 4.0 },
+            chick:      { emoji: '🐥', jumpPower: -10.2, maxHp: 5.0 }
         };
 
         let canvasWidth = 700;
@@ -255,9 +257,7 @@
             attackPowered: 0
         };
 
-        // 💡 보스 관련 변수
         let boss = null; 
-
         let obstacles = [];
         let warnings = [];    
         let projectiles = []; 
@@ -317,14 +317,12 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // 스테이지 시작 시 보스전 여부 판단 및 초기화
         function initStage() {
             isStageCleared = false;
             obstacles = []; warnings = []; items = []; holes = [];
 
-            // 💡 5, 10, 15 ... 50 스테이지는 보스 스테이지
             if (myState.stage % 5 === 0) {
-                let bossMaxHp = 30 + (myState.stage * 10); // 스테이지가 높을수록 보스 체력 증가
+                let bossMaxHp = 30 + (myState.stage * 10);
                 boss = {
                     x: canvasWidth - 120,
                     y: groundY - 50,
@@ -424,7 +422,6 @@
                 if (myState.invincible > 0) myState.invincible--;
                 if (myState.attackPowered > 0) myState.attackPowered--;
 
-                // 💡 보스 스테이지가 아닐 때만 일반 장애물/아이템 스폰
                 if (!boss) {
                     if (myState.stage >= 3 && holes.length === 0 && Math.random() < 0.02) {
                         holes.push({ x: canvasWidth, w: 70 });
@@ -501,7 +498,6 @@
                     }
                 }
 
-                // 💡 총알 충돌 판정 (일반 장애물 및 보스 타격)
                 for (let i = projectiles.length - 1; i >= 0; i--) {
                     projectiles[i].x += projectiles[i].speed;
                     if (projectiles[i].x > canvasWidth + 20) {
@@ -509,14 +505,12 @@
                         continue;
                     }
 
-                    // 보스 피격 판정
                     if (boss && projectiles[i].x > boss.x && projectiles[i].x < boss.x + boss.w &&
                         projectiles[i].y > boss.y && projectiles[i].y < boss.y + boss.h) {
-                        boss.hp -= (myState.attackPowered > 0 ? 3 : 1); // 강화 총알은 데미지 3
+                        boss.hp -= (myState.attackPowered > 0 ? 3 : 1);
                         projectiles.splice(i, 1);
                         myState.score += 20;
 
-                        // 보스 체력이 0 이하가 되면 보스 처치 클리어!
                         if (boss.hp <= 0) {
                             isStageCleared = true;
                             boss = null;
@@ -524,7 +518,6 @@
                         continue;
                     }
 
-                    // 일반 장애물 피격 판정
                     for (let j = obstacles.length - 1; j >= 0; j--) {
                         let obs = obstacles[j];
                         if (projectiles[i] && projectiles[i].x > obs.x && projectiles[i].x < obs.x + obs.w &&
@@ -537,11 +530,10 @@
                     }
                 }
 
-                // 💡 보스 몸통 박치기 충돌 판정
                 if (boss && myState.invincible === 0 &&
                     myState.x - 14 < boss.x + boss.w && myState.x + 14 > boss.x &&
                     (myState.y - 28) < boss.y + boss.h && myState.y > boss.y) {
-                    myState.hp = Math.max(0, myState.hp - 1.0); // 보스에게 닿으면 하트 1개 차감
+                    myState.hp = Math.max(0, myState.hp - 1.0);
                     myState.invincible = 60;
                 }
 
@@ -560,7 +552,6 @@
             document.getElementById('stage-title').innerText = `[스테이지 ${myState.stage} / 50]`;
             document.getElementById('score-display').innerText = `🪙 ${myState.score}`;
             
-            // 보스 스테이지일 때는 타이머 대신 보스전 안내 표시
             if (boss) {
                 document.getElementById('timer-display').innerText = `⚔️ 보스전!`;
             } else {
@@ -585,8 +576,7 @@
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 바닥 및 구멍
-            ctx.fillStyle = boss ? "#2a1215" : "#1e222d"; // 보스 스테이지는 붉은빛 바닥
+            ctx.fillStyle = boss ? "#2a1215" : "#1e222d";
             let lastX = 0;
             for (let h of holes) {
                 ctx.fillRect(lastX, groundY + 12, h.x - lastX, canvas.height - (groundY + 12));
@@ -597,22 +587,18 @@
             }
             ctx.fillRect(lastX, groundY + 12, canvas.width - lastX, canvas.height - (groundY + 12));
 
-            // 💡 보스 렌더링 및 보스 체력 게이지 표시
             if (boss) {
                 ctx.fillStyle = "#e03131";
                 ctx.fillRect(boss.x, boss.y, boss.w, boss.h);
                 ctx.strokeStyle = "#fff"; ctx.lineWidth = 2;
                 ctx.strokeRect(boss.x, boss.y, boss.w, boss.h);
 
-                // 보스 얼굴 이모지
                 ctx.font = "35px sans-serif"; ctx.textAlign = "center";
                 ctx.fillText("🦖", boss.x + boss.w / 2, boss.y + boss.h / 2 + 12);
 
-                // 보스 이름
                 ctx.fillStyle = "#ff6b6b"; ctx.font = "bold 11px sans-serif";
                 ctx.fillText(boss.name, boss.x + boss.w / 2, boss.y - 12);
 
-                // 상단 보스 체력 바 (HP Bar)
                 let barW = canvasWidth - 100;
                 let hpRatio = Math.max(0, boss.hp / boss.maxHp);
                 ctx.fillStyle = "rgba(0,0,0,0.6)"; ctx.fillRect(50, 15, barW, 16);
@@ -621,7 +607,7 @@
 
                 ctx.fillStyle = "white"; ctx.font = "bold 10px sans-serif";
                 ctx.textAlign = "center";
-                ctx.fillText(`BOSS HP: ${Math.ceil(boss.hp)} / ${boss.maxHp}`, canvas.width / 2, constY = 27);
+                ctx.fillText(`BOSS HP: ${Math.ceil(boss.hp)} / ${boss.maxHp}`, canvas.width / 2, 27);
             }
 
             for (let w of warnings) {
@@ -637,7 +623,6 @@
                 }
             }
 
-            // 스테이지 번호 워터마크
             ctx.fillStyle = boss ? "rgba(224,49,49,0.08)" : "rgba(255,255,255,0.06)";
             ctx.font = "bold 90px sans-serif";
             ctx.textAlign = "center";
@@ -669,7 +654,7 @@
                     let renderY = (key === myId) ? myState.y : p.y;
                     
                     ctx.font = "30px sans-serif"; ctx.textAlign = "center";
-                    ctx.fillText(p.emoji || '👦🏽', renderX, renderY);
+                    ctx.fillText(p.emoji || '🐰', renderX, renderY);
                     ctx.fillStyle = "white"; ctx.font = "bold 11px sans-serif";
                     ctx.fillText(p.name, renderX, renderY - 22);
                 }
