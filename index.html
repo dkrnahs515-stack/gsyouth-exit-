@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>강서청소년회관 횡스크롤 탈출 : 자정의 메아리</title>
+    <title>&lt;바이브 코딩&gt; 대탈출</title>
     
     <!-- Firebase SDK 로드 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -13,8 +13,8 @@
         :root {
             --bg-dark: #0a0a0a;
             --panel-bg: #1a1c23;
-            --primary: #ff5e62;
-            --primary-glow: #ff9966;
+            --primary: #5b5bd6;
+            --primary-glow: #8f94fb;
             --text-main: #f0f0f0;
             --text-muted: #aaa;
             --danger: #ff4b4b;
@@ -31,98 +31,119 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        h1 { color: var(--primary-glow); margin: 5px 0 10px; font-size: 1.5rem; text-align: center; }
-        h2 { font-size: 1.2rem; margin-top: 0; color: #fff; }
+        h1 { color: var(--primary-glow); margin: 5px 0 10px; font-size: 1.4rem; text-align: center; }
+        h2 { font-size: 1.1rem; margin-top: 0; color: #fff; }
         
         .box {
-            background: var(--panel-bg); padding: 20px; border-radius: 12px;
+            background: var(--panel-bg); padding: 18px; border-radius: 12px;
             width: 100%; box-sizing: border-box; border: 1px solid #333; text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         input {
-            width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px;
+            width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px;
             border: 1px solid #555; background: #252830; color: white;
             font-size: 1rem; text-align: center; outline: none;
         }
-        input:focus { border-color: var(--primary-glow); box-shadow: 0 0 8px rgba(255,153,102,0.5); }
+        input:focus { border-color: var(--primary-glow); box-shadow: 0 0 8px rgba(143,148,251,0.5); }
+
+        /* 동물 캐릭터 선택 그리드 */
+        .char-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0;
+        }
+        .char-card {
+            background: #252830; border: 2px solid #444; border-radius: 8px;
+            padding: 8px 4px; cursor: pointer; transition: 0.2s; font-size: 0.8rem; text-align: center;
+        }
+        .char-card.selected { border-color: var(--primary-glow); background: rgba(143, 148, 251, 0.2); }
+        .char-card div:first-child { font-size: 1.6rem; margin-bottom: 3px; }
 
         button {
-            width: 100%; padding: 14px; margin-top: 12px;
+            width: 100%; padding: 14px; margin-top: 10px;
             background: linear-gradient(45deg, var(--primary), var(--primary-glow));
             color: white; border: none; border-radius: 8px; font-size: 1.1rem;
             font-weight: bold; cursor: pointer; transition: 0.2s;
         }
         button:active { transform: scale(0.97); }
 
-        .story-text { line-height: 1.5; font-size: 0.95rem; text-align: left; margin-bottom: 15px; word-break: keep-all; }
+        .story-text { line-height: 1.4; font-size: 0.9rem; text-align: left; margin-bottom: 12px; word-break: keep-all; }
         .story-text span { color: var(--primary-glow); font-weight: bold; }
 
-        /* 🗺️ 횡스크롤 게임 화면 */
+        /* 🗺️ 게임 화면 */
         #game-area { display: none; flex-direction: column; align-items: center; width: 100%; }
 
         .status-bar {
             width: 100%; max-width: 380px; background: rgba(255,255,255,0.05);
-            padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;
+            padding: 8px 12px; border-radius: 8px; margin-bottom: 6px;
             display: flex; justify-content: space-between; align-items: center;
             font-size: 0.85rem; box-sizing: border-box; font-weight: bold; border: 1px solid #333;
         }
 
         #side-canvas {
-            width: 380px; height: 250px; background: #15171e;
+            width: 380px; height: 240px; background: #15171e;
             border: 3px solid #444; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
-        /* 🎮 점프 버튼 패널 */
         .control-panel {
             width: 100%; max-width: 380px; display: flex; justify-content: space-between;
-            align-items: center; margin-top: 12px; box-sizing: border-box;
+            align-items: center; margin-top: 10px; box-sizing: border-box;
         }
 
         .jump-btn {
-            width: 100%; height: 65px; background: linear-gradient(135deg, #4dabf7, #3b82f6);
-            color: white; border: 2px solid #fff; border-radius: 12px; font-size: 1.3rem;
+            width: 100%; height: 60px; background: linear-gradient(135deg, var(--primary), var(--primary-glow));
+            color: white; border: 2px solid #fff; border-radius: 12px; font-size: 1.2rem;
             font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.4); user-select: none;
             -webkit-user-select: none; cursor: pointer;
         }
-        .jump-btn:active { transform: scale(0.96); background: #2563eb; }
+        .jump-btn:active { transform: scale(0.96); }
 
-        .footer { margin-top: auto; padding: 10px 0; color: var(--text-muted); font-size: 0.8rem; }
+        .footer { margin-top: auto; padding: 8px 0; color: var(--text-muted); font-size: 0.75rem; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>자정의 메아리 : 러닝 탈출</h1>
+        <h1>&lt;바이브 코딩&gt; 대탈출</h1>
 
-        <!-- 1. 로그인 화면 -->
+        <!-- 1. 캐릭터 선택 및 등록 화면 -->
         <div id="login-screen" class="box">
-            <h2>탐색원 등록</h2>
-            <p style="font-size: 0.85rem; color: var(--text-muted);">이름을 입력하면 고유 캐릭터가 부여됩니다.</p>
+            <h2>탐색원 및 캐릭터 선택</h2>
             <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
-            <button onclick="showIntro()">입장하기</button>
+            
+            <div style="font-size: 0.85rem; text-align: left; margin-top: 8px; color: var(--text-muted);">캐릭터 선택 (능력치 다름):</div>
+            <div class="char-grid" id="char-grid">
+                <!-- 동적으로 생성 또는 하드코딩 -->
+                <div class="char-card selected" onclick="selectChar('rabbit', this)"><div>🐰</div>토끼<br><span style="font-size:0.7rem; color:#aaa;">높은점프</span></div>
+                <div class="char-card" onclick="selectChar('turtle', this)"><div>🐢</div>거북이<br><span style="font-size:0.7rem; color:#aaa;">탱크체력</span></div>
+                <div class="char-card" onclick="selectChar('lion', this)"><div>🦁</div>사자<br><span style="font-size:0.7rem; color:#aaa;">밸런스형</span></div>
+                <div class="char-card" onclick="selectChar('penguin', this)"><div>🐧</div>펭귄<br><span style="font-size:0.7rem; color:#aaa;">가벼운점프</span></div>
+                <div class="char-card" onclick="selectChar('chicken', this)"><div>🐔</div>닭<br><span style="font-size:0.7rem; color:#aaa;">연속점프력</span></div>
+                <div class="char-card" onclick="selectChar('mouse', this)"><div>🐭</div>쥐<br><span style="font-size:0.7rem; color:#aaa;">고속이동</span></div>
+                <div class="char-card" onclick="selectChar('chick', this)"><div>🐥</div>병아리<br><span style="font-size:0.7rem; color:#aaa;">초미니특가</span></div>
+            </div>
+
+            <button onclick="showIntro()">선택 완료 및 입장</button>
         </div>
 
         <!-- 2. 인트로 화면 -->
         <div id="intro-screen" class="box" style="display: none;">
-            <h2>질주하는 탈출 로드!</h2>
+            <h2>10단계 스테이지 탈출 로드!</h2>
             <div class="story-text">
-                시스템 오류로 날아오는 <span>보안 드론과 장애물</span>을 피해 1층 로비까지 끝까지 질주하세요!<br><br>
-                ⌨️ <span>스페이스바</span> 또는 화면 아래 <span>[점프] 버튼</span>을 눌러 장애물을 피할 수 있습니다.<br>
-                ❤️ 체력은 <span>하트 5개</span>이며, 부딪힐 때마다 반 개씩 깎입니다.
+                시스템 오류로 날아오는 <span>장애물을 피해 총 10개의 스테이지</span>를 돌파하세요!<br><br>
+                ⌨️ <span>스페이스바</span> 또는 화면 아래 <span>[점프] 버튼</span> 사용<br>
+                📈 스테이지가 올라갈수록 <span>장애물 속도와 크기</span>가 변하여 난이도가 급상승합니다!
             </div>
-            <button onclick="joinGameAndStart()">달리기 시작하기</button>
+            <button onclick="joinGameAndStart()">대탈출 질주 시작!</button>
         </div>
 
-        <!-- 3. 횡스크롤 게임 화면 -->
+        <!-- 3. 게임 플레이 화면 -->
         <div id="game-area">
             <div class="status-bar">
-                <span id="stage-title" style="color: var(--primary-glow);">[3층] 질주 구간</span>
+                <span id="stage-title" style="color: var(--primary-glow);">[스테이지 1 / 10]</span>
                 <span id="hp-display" style="color: #ff4b4b;">❤️❤️❤️❤️❤️</span>
             </div>
 
-            <!-- 2D 횡스크롤 캔버스 -->
-            <canvas id="side-canvas" width="380" height="250"></canvas>
+            <canvas id="side-canvas" width="380" height="240"></canvas>
 
             <div class="control-panel">
                 <button class="jump-btn" id="btn-jump">👆 점프! (SPACE)</button>
@@ -147,32 +168,45 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        const SHAPE_POOL = [
-            { shape: 'circle', color: '#ff4d4d' },
-            { shape: 'rect', color: '#4dabf7' },
-            { shape: 'triangle', color: '#00e676' },
-            { shape: 'pentagon', color: '#ffd43b' },
-            { shape: 'star', color: '#cc5de8' }
-        ];
+        // 🐾 동물 캐릭터별 고유 능력치 정의
+        const CHAR_STATS = {
+            rabbit:  { emoji: '🐰', jumpPower: -11.5, maxHp: 5.0, name: '토끼' },
+            turtle:  { emoji: '🐢', jumpPower: -9.5,  maxHp: 8.0, name: '거북이' },
+            lion:    { emoji: '🦁', jumpPower: -10.5, maxHp: 5.0, name: '사자' },
+            penguin: { emoji: '🐧', jumpPower: -10.0, maxHp: 6.0, name: '펭귄' },
+            chicken: { emoji: '🐔', jumpPower: -11.0, maxHp: 4.0, name: '닭' },
+            mouse:   { emoji: '🐭', jumpPower: -10.8, maxHp: 4.0, name: '쥐' },
+            chick:   { emoji: '🐥', jumpPower: -10.2, maxHp: 5.0, name: '병아리' }
+        };
+
+        let selectedCharKey = 'rabbit';
+        function selectChar(key, el) {
+            document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedCharKey = key;
+        }
 
         let myId = ""; 
         let myName = "";
         let allPlayersData = {};
         
-        // 🏃‍♂️ 플레이어 물리 및 상태 데이터 (횡스크롤)
-        const groundY = 190; // 바닥 높이
+        const groundY = 180;
         let myState = {
             x: 60,
             y: groundY,
             vy: 0,
             isJumping: false,
-            hp: 5.0, // 하트 5개 (반 개 단위: 0.5)
-            invincible: 0 // 피격 후 무적 시간 틱
+            hp: 5.0,
+            maxHp: 5.0,
+            jumpPower: -10.5,
+            invincible: 0,
+            stage: 1,
+            stageTimer: 0 // 각 스테이지 지속 시간 틱
         };
 
-        // 🚧 장애물 시스템 데이터
         let obstacles = [];
         let obstacleTimer = 0;
+        let isCleared = false;
 
         const canvas = document.getElementById('side-canvas');
         const ctx = canvas.getContext('2d');
@@ -185,17 +219,20 @@
         }
 
         function joinGameAndStart() {
-            const randomChar = SHAPE_POOL[Math.floor(Math.random() * SHAPE_POOL.length)];
+            const stats = CHAR_STATS[selectedCharKey];
+            myState.hp = stats.maxHp;
+            myState.maxHp = stats.maxHp;
+            myState.jumpPower = stats.jumpPower;
+
             const playerRef = db.ref('gameRoom/players').push();
             myId = playerRef.key;
 
             playerRef.set({
                 name: myName,
-                x: myState.x,
+                emoji: stats.emoji,
                 y: myState.y,
-                color: randomChar.color,
-                shape: randomChar.shape,
-                hp: 5.0
+                hp: myState.hp,
+                stage: 1
             });
             playerRef.onDisconnect().remove();
 
@@ -206,7 +243,6 @@
         }
 
         function startMultiplayer() {
-            // 1. 실시간 플레이어 데이터 수신 (동시 접속)
             db.ref('gameRoom/players').on('value', (snapshot) => {
                 allPlayersData = snapshot.val() || {};
             });
@@ -215,7 +251,6 @@
             requestAnimationFrame(gameLoop);
         }
 
-        // --- 🕹️ 점프 조작 세팅 ---
         function setupControls() {
             window.addEventListener('keydown', e => {
                 if (e.code === 'Space' || e.key === ' ') {
@@ -234,35 +269,50 @@
         }
 
         function triggerJump() {
-            if (!myState.isJumping && myState.hp > 0) {
-                myState.vy = -10.5; // 점프 힘
+            if (!myState.isJumping && myState.hp > 0 && !isCleared) {
+                myState.vy = myState.jumpPower;
                 myState.isJumping = true;
             }
         }
 
-        // --- 🔄 메인 프레임 루프 (60FPS 게임엔진) ---
         let lastSyncTime = 0;
 
         function gameLoop() {
-            if (myState.hp > 0) {
-                // 물리 엔진: 중력 적용
+            if (myState.hp > 0 && !isCleared) {
+                // 물리 엔진
                 myState.vy += 0.55;
                 myState.y += myState.vy;
 
-                // 바닥 착지 체크
                 if (myState.y >= groundY) {
                     myState.y = groundY;
                     myState.vy = 0;
                     myState.isJumping = false;
                 }
 
-                // 무적 시간 감소
                 if (myState.invincible > 0) myState.invincible--;
 
-                // 장애물 생성 (일정 주기마다)
+                // 스테이지 타이머 (약 10초(600프레임)마다 다음 스테이지로 진입)
+                myState.stageTimer++;
+                if (myState.stageTimer > 600) {
+                    myState.stageTimer = 0;
+                    if (myState.stage < 10) {
+                        myState.stage++;
+                    } else {
+                        isCleared = true; // 10스테이지 클리어!
+                    }
+                }
+
+                // 🚧 스테이지별 난이도 적용 (속도 및 크기 변화)
+                // 스테이지가 높을수록 장애물 스폰이 빨라지고 속도가 붙음
+                let spawnInterval = Math.max(40, 100 - (myState.stage * 5));
                 obstacleTimer++;
-                if (obstacleTimer > 90 + Math.random() * 50) { // 무작위 간격
-                    obstacles.push({ x: 380, y: groundY - 15, w: 20, h: 25, speed: 4.5 });
+                if (obstacleTimer > spawnInterval + Math.random() * 20) {
+                    // 스테이지별 장애물 크기 및 속도 랜덤성 부여
+                    let obsWidth = 18 + (myState.stage % 3) * 4; // 크기가 다름
+                    let obsHeight = 22 + (myState.stage % 2) * 8;
+                    let obsSpeed = 4.0 + (myState.stage * 0.4); // 점점 빨라짐
+
+                    obstacles.push({ x: 380, y: groundY - (obsHeight - 12), w: obsWidth, h: obsHeight, speed: obsSpeed });
                     obstacleTimer = 0;
                 }
 
@@ -270,67 +320,69 @@
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     obstacles[i].x -= obstacles[i].speed;
 
-                    // 화면 밖으로 나간 장애물 제거
-                    if (obstacles[i].x < -30) {
+                    if (obstacles[i].x < -40) {
                         obstacles.splice(i, 1);
                         continue;
                     }
 
-                    // AABB 충돌 체크 (내 캐릭터와 장애물)
-                    // 캐릭터 위치: (myState.x, myState.y - 12) 크기 24x24 박스
+                    // 충돌 체크
                     if (myState.invincible === 0 &&
                         myState.x - 12 < obstacles[i].x + obstacles[i].w &&
                         myState.x + 12 > obstacles[i].x &&
                         (myState.y - 24) < obstacles[i].y + obstacles[i].h &&
                         myState.y > obstacles[i].y) {
                         
-                        // 충돌 시 하트 0.5개 (반 개) 차감
                         myState.hp = Math.max(0, myState.hp - 0.5);
-                        myState.invincible = 45; // 45프레임 동안 무적 (깜빡임 효과 유도)
+                        myState.invincible = 40; 
                     }
                 }
 
-                // 💡 내 위치 및 체력을 Firebase 서버로 실시간 동기화
                 if (Date.now() - lastSyncTime > 35) {
                     db.ref('gameRoom/players/' + myId).update({
                         y: myState.y,
-                        hp: myState.hp
+                        hp: myState.hp,
+                        stage: myState.stage
                     });
                     lastSyncTime = Date.now();
                 }
             }
 
-            // 하트 UI 텍스트 렌더링
             updateHpUI();
-
-            // 캔버스 그리기
             drawSideScrollMap();
             requestAnimationFrame(gameLoop);
         }
 
         function updateHpUI() {
+            document.getElementById('stage-title.innerHTML') // 수정
+            document.getElementById('stage-title').innerText = `[스테이지 ${myState.stage} / 10]`;
+            
             let fullHearts = Math.floor(myState.hp);
             let hasHalf = (myState.hp % 1 !== 0);
-            let heartStr = "❤️".repeat(fullHearts) + (hasHalf ? "💔" : "") + "🖤".repeat(5 - Math.ceil(myState.hp));
+            let maxH = Math.ceil(myState.maxHp);
+            let heartStr = "❤️".repeat(fullHearts) + (hasHalf ? "💔" : "") + "🖤".repeat(Math.max(0, maxH - Math.ceil(myState.hp)));
             document.getElementById('hp-display').innerText = heartStr;
         }
 
-        // --- 🎨 횡스크롤 캔버스 렌더링 ---
         function drawSideScrollMap() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. 배경 (복도 느낌의 선)
+            // 배경 및 바닥
             ctx.strokeStyle = "#2e3240";
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(0, groundY + 12); ctx.lineTo(380, groundY + 12);
             ctx.stroke();
 
-            // 바닥 그리기
             ctx.fillStyle = "#1e222d";
             ctx.fillRect(0, groundY + 12, canvas.width, canvas.height - (groundY + 12));
 
-            // 2. 장애물(드론) 그리기
+            // 스테이지 단계별 배경 효과 표시
+            ctx.fillStyle = "rgba(255,255,255,0.1)";
+            ctx.font = "bold 50px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(myState.stage, canvas.width / 2, canvas.height / 2 + 15);
+
+            // 장애물
             ctx.fillStyle = "#ff4b4b";
             for (let obs of obstacles) {
                 ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
@@ -339,68 +391,53 @@
                 ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
             }
 
-            // 3. 서버에 접속한 모든 플레이어 렌더링 (동시 접속자 확인용)
+            // 플레이어들 렌더링
             Object.keys(allPlayersData).forEach(key => {
                 const p = allPlayersData[key];
                 if (p.y !== undefined) {
-                    // 내가 피격당했을 때 깜빡이는 효과 (무적 시간 동안)
                     if (key === myId && myState.invincible > 0 && Math.floor(myState.invincible / 4) % 2 === 0) {
-                        return; // 깜빡임 연출을 위해 스킵
+                        return; 
                     }
 
-                    drawShape(myState.x, p.y, p.color, p.shape); // X는 고정, Y는 각자의 점프 상태 반영
+                    let renderY = (key === myId) ? myState.y : p.y;
+                    
+                    // 동물 이모지 렌더링
+                    ctx.font = "24px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.emoji || '🐰', myState.x, renderY);
 
-                    // 이름 및 체력 표시
+                    // 이름 표시
                     ctx.fillStyle = "white";
                     ctx.font = "bold 10px sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.fillText(p.name, myState.x, p.y - 20);
+                    ctx.fillText(p.name, myState.x, renderY - 16);
                 }
             });
 
-            // 게임 오버 처리
+            // 게임 오버
             if (myState.hp <= 0) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#ff4b4b";
                 ctx.font = "bold 22px sans-serif";
                 ctx.textAlign = "center";
                 ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 10);
                 ctx.fillStyle = "white";
-                ctx.font = "13px sans-serif";
+                ctx.font = "12px sans-serif";
                 ctx.fillText("새로고침하여 다시 도전하세요!", canvas.width / 2, canvas.height / 2 + 20);
             }
-        }
 
-        // --- 📐 도형 렌더링 함수 ---
-        function drawShape(x, y, color, shape) {
-            ctx.fillStyle = color;
-            ctx.beginPath();
-            if (shape === 'circle') {
-                ctx.arc(x, y, 12, 0, Math.PI * 2);
-            } else if (shape === 'rect') {
-                ctx.rect(x - 12, y - 12, 24, 24);
-            } else if (shape === 'triangle') {
-                ctx.moveTo(x, y - 14); ctx.lineTo(x - 12, y + 10); ctx.lineTo(x + 12, y + 10); ctx.closePath();
-            } else if (shape === 'pentagon') {
-                for (let i = 0; i < 5; i++) {
-                    const angle = (i * 2 * Math.PI / 5) - Math.PI / 2;
-                    const px = x + 13 * Math.cos(angle);
-                    const py = y + 13 * Math.sin(angle);
-                    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
-                }
-                ctx.closePath();
-            } else if (shape === 'star') {
-                for (let i = 0; i < 5; i++) {
-                    ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * 14 + x, -Math.sin((18 + i * 72) * Math.PI / 180) * 14 + y);
-                    ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * 6 + x, -Math.sin((54 + i * 72) * Math.PI / 180) * 6 + y);
-                }
-                ctx.closePath();
+            // 대탈출 성공 (클리어)
+            if (isCleared) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00e676";
+                ctx.font = "bold 22px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("🎉 대탈출 성공! 🎉", canvas.width / 2, canvas.height / 2 - 15);
+                ctx.fillStyle = "white";
+                ctx.font = "12px sans-serif";
+                ctx.fillText("모든 스테이지를 돌파했습니다!", canvas.width / 2, canvas.height / 2 + 15);
             }
-            ctx.fill();
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
         }
     </script>
 </body>
