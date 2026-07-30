@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>강서청소년회관 방탈출 : 자정의 메아리</title>
+    <title>강서청소년회관 횡스크롤 탈출 : 자정의 메아리</title>
     
     <!-- Firebase SDK 로드 -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
@@ -17,6 +17,7 @@
             --primary-glow: #ff9966;
             --text-main: #f0f0f0;
             --text-muted: #aaa;
+            --danger: #ff4b4b;
         }
 
         body {
@@ -30,116 +31,101 @@
             display: flex; flex-direction: column; align-items: center;
         }
 
-        h1 { color: var(--primary-glow); margin: 10px 0 15px; font-size: 1.6rem; text-align: center; text-shadow: 0 0 10px rgba(255,153,102,0.4); }
-        h2 { font-size: 1.3rem; margin-top: 0; color: #fff; }
+        h1 { color: var(--primary-glow); margin: 5px 0 10px; font-size: 1.5rem; text-align: center; }
+        h2 { font-size: 1.2rem; margin-top: 0; color: #fff; }
         
         .box {
-            background: var(--panel-bg); padding: 25px 20px; border-radius: 12px;
+            background: var(--panel-bg); padding: 20px; border-radius: 12px;
             width: 100%; box-sizing: border-box; border: 1px solid #333; text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         input {
-            width: 90%; padding: 14px; margin: 15px 0; border-radius: 8px;
+            width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px;
             border: 1px solid #555; background: #252830; color: white;
-            font-size: 1.1rem; text-align: center; outline: none;
+            font-size: 1rem; text-align: center; outline: none;
         }
         input:focus { border-color: var(--primary-glow); box-shadow: 0 0 8px rgba(255,153,102,0.5); }
 
         button {
-            width: 100%; padding: 15px; margin-top: 15px;
+            width: 100%; padding: 14px; margin-top: 12px;
             background: linear-gradient(45deg, var(--primary), var(--primary-glow));
             color: white; border: none; border-radius: 8px; font-size: 1.1rem;
             font-weight: bold; cursor: pointer; transition: 0.2s;
         }
         button:active { transform: scale(0.97); }
 
-        /* 📖 스토리 인트로 텍스트 */
-        .story-text { line-height: 1.6; font-size: 1.05rem; text-align: left; margin-bottom: 20px; word-break: keep-all; }
+        .story-text { line-height: 1.5; font-size: 0.95rem; text-align: left; margin-bottom: 15px; word-break: keep-all; }
         .story-text span { color: var(--primary-glow); font-weight: bold; }
-        
-        .floor-desc { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 3px solid var(--primary); text-align: left; margin-bottom: 15px; font-size: 0.95rem; }
 
-        /* 🗺️ 메인 스테이지 캔버스 & 맵 */
+        /* 🗺️ 횡스크롤 게임 화면 */
         #game-area { display: none; flex-direction: column; align-items: center; width: 100%; }
 
         .status-bar {
-            width: 100%; max-width: 360px; background: rgba(255,255,255,0.05);
-            padding: 10px 15px; border-radius: 8px; margin-bottom: 10px;
+            width: 100%; max-width: 380px; background: rgba(255,255,255,0.05);
+            padding: 8px 12px; border-radius: 8px; margin-bottom: 8px;
             display: flex; justify-content: space-between; align-items: center;
-            font-size: 0.9rem; box-sizing: border-box; font-weight: bold; border: 1px solid #333;
+            font-size: 0.85rem; box-sizing: border-box; font-weight: bold; border: 1px solid #333;
         }
 
-        #map-canvas {
-            width: 360px; height: 360px; background: #15171e;
+        #side-canvas {
+            width: 380px; height: 250px; background: #15171e;
             border: 3px solid #444; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
-        /* 🎮 가상 패드 */
-        .d-pad { display: grid; grid-template-columns: 55px 55px 55px; grid-template-rows: 50px 50px; gap: 8px; margin-top: 15px; }
-        .d-btn { background: #2a2d37; color: white; border: 2px solid #555; border-radius: 10px; font-weight: bold; font-size: 1.2rem; user-select: none; -webkit-user-select: none; }
-        .d-btn:active, .d-btn.pressed { background: var(--primary); border-color: #fff; }
-        .d-btn.up { grid-column: 2; grid-row: 1; }
-        .d-btn.left { grid-column: 1; grid-row: 2; }
-        .d-btn.down { grid-column: 2; grid-row: 2; }
-        .d-btn.right { grid-column: 3; grid-row: 2; }
+        /* 🎮 점프 버튼 패널 */
+        .control-panel {
+            width: 100%; max-width: 380px; display: flex; justify-content: space-between;
+            align-items: center; margin-top: 12px; box-sizing: border-box;
+        }
 
-        .footer { margin-top: auto; padding: 15px 0; color: var(--text-muted); font-size: 0.8rem; }
+        .jump-btn {
+            width: 100%; height: 65px; background: linear-gradient(135deg, #4dabf7, #3b82f6);
+            color: white; border: 2px solid #fff; border-radius: 12px; font-size: 1.3rem;
+            font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.4); user-select: none;
+            -webkit-user-select: none; cursor: pointer;
+        }
+        .jump-btn:active { transform: scale(0.96); background: #2563eb; }
+
+        .footer { margin-top: auto; padding: 10px 0; color: var(--text-muted); font-size: 0.8rem; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>자정의 메아리</h1>
+        <h1>자정의 메아리 : 러닝 탈출</h1>
 
         <!-- 1. 로그인 화면 -->
         <div id="login-screen" class="box">
             <h2>탐색원 등록</h2>
-            <p style="font-size: 0.9rem; color: var(--text-muted);">이름을 입력하면 고유 도형이 부여됩니다.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">이름을 입력하면 고유 캐릭터가 부여됩니다.</p>
             <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
             <button onclick="showIntro()">입장하기</button>
         </div>
 
-        <!-- 2. 상황 설명 (인트로) 화면 -->
+        <!-- 2. 인트로 화면 -->
         <div id="intro-screen" class="box" style="display: none;">
-            <h2>강서청소년회관, 자정.</h2>
+            <h2>질주하는 탈출 로드!</h2>
             <div class="story-text">
-                갑자기 셔터가 내려가고 건물의 시스템이 마비되었습니다.<br><br>
-                당신은 다른 참가자들과 함께 이 곳에 갇혔습니다. 
-                탈출하기 위해서는 <span>3층부터 1층까지 내려가며</span> 각 층의 마비된 시스템을 수동으로 복구해야 합니다.
+                시스템 오류로 날아오는 <span>보안 드론과 장애물</span>을 피해 1층 로비까지 끝까지 질주하세요!<br><br>
+                ⌨️ <span>스페이스바</span> 또는 화면 아래 <span>[점프] 버튼</span>을 눌러 장애물을 피할 수 있습니다.<br>
+                ❤️ 체력은 <span>하트 5개</span>이며, 부딪힐 때마다 반 개씩 깎입니다.
             </div>
-            
-            <div class="floor-desc">
-                <strong>[층별 미션 안내]</strong><br>
-                📡 3층 청다방 : 방송 주파수 복구<br>
-                📁 2층 사무실 : 출입 보안 해제<br>
-                🔌 지하 아지트 : 비상 전원 가동<br>
-                🤖 1층 FUNGYM : AI 메인 시스템 재부팅
-            </div>
-
-            <button onclick="joinGameAndStart()">3층으로 진입 (게임 시작)</button>
+            <button onclick="joinGameAndStart()">달리기 시작하기</button>
         </div>
 
-        <!-- 3. 실시간 멀티플레이 맵 화면 -->
+        <!-- 3. 횡스크롤 게임 화면 -->
         <div id="game-area">
             <div class="status-bar">
-                <span id="stage-title" style="color: var(--primary-glow);">[3층] 청다방</span>
-                <span id="online-count">접속자: 0명</span>
+                <span id="stage-title" style="color: var(--primary-glow);">[3층] 질주 구간</span>
+                <span id="hp-display" style="color: #ff4b4b;">❤️❤️❤️❤️❤️</span>
             </div>
 
-            <!-- 모두가 공유하는 커다란 1개 층 캔버스 -->
-            <canvas id="map-canvas" width="360" height="360"></canvas>
+            <!-- 2D 횡스크롤 캔버스 -->
+            <canvas id="side-canvas" width="380" height="250"></canvas>
 
-            <!-- 컨트롤러 및 기능 버튼 -->
-            <div style="display: flex; width: 360px; justify-content: space-between; align-items: flex-end;">
-                <div class="d-pad">
-                    <button class="d-btn up" id="btn-w">W</button>
-                    <button class="d-btn left" id="btn-a">A</button>
-                    <button class="d-btn down" id="btn-s">S</button>
-                    <button class="d-btn right" id="btn-d">D</button>
-                </div>
-                <!-- 💡 다음 층으로 이동 버튼 (관리자/테스트용) -->
-                <button onclick="advanceStage()" style="width: 120px; font-size: 0.9rem; padding: 10px; margin: 0 0 5px 0; background: #333;">다음 층 이동 ➔</button>
+            <div class="control-panel">
+                <button class="jump-btn" id="btn-jump">👆 점프! (SPACE)</button>
             </div>
         </div>
 
@@ -147,7 +133,6 @@
     </div>
 
     <script>
-        // 제공된 Firebase 설정값
         const firebaseConfig = {
             apiKey: "AIzaSyAVtGfRyA9CaKXU2Ol5sfLA0gK2k4gXn5A",
             authDomain: "gsyouth-exit.firebaseapp.com",
@@ -170,69 +155,35 @@
             { shape: 'star', color: '#cc5de8' }
         ];
 
-        // 🧩 층별 스테이지 및 가구(오브젝트) 데이터 세팅
-        const STAGE_DATA = {
-            1: {
-                title: "[3층] 청다방 (크리에이터실)",
-                bgColor: "#1e222d",
-                objects: [
-                    { x: 40, y: 40, w: 120, h: 50, color: "#4a4a4a", label: "방송 데스크" },
-                    { x: 240, y: 60, w: 60, h: 60, color: "#8b5a2b", label: "원탁 테이블" },
-                    { x: 60, y: 250, w: 160, h: 40, color: "#3d5a80", label: "휴식용 소파" },
-                    { x: 300, y: 200, w: 40, h: 100, color: "#666", label: "서버랙" }
-                ]
-            },
-            2: {
-                title: "[2층] 사무실",
-                bgColor: "#232025",
-                objects: [
-                    { x: 30, y: 30, w: 80, h: 60, color: "#5c4033", label: "직원 책상" },
-                    { x: 150, y: 30, w: 80, h: 60, color: "#5c4033", label: "직원 책상" },
-                    { x: 20, y: 220, w: 40, h: 120, color: "#778899", label: "철제 캐비닛" },
-                    { x: 120, y: 180, w: 180, h: 20, color: "#111", label: "유리 파티션" }
-                ]
-            },
-            3: {
-                title: "[지하] 아지트",
-                bgColor: "#1a1525",
-                objects: [
-                    { x: 100, y: 120, w: 160, h: 120, color: "#2d1b2e", label: "댄스 플로어" },
-                    { x: 20, y: 20, w: 100, h: 40, color: "#800020", label: "낡은 스피커" },
-                    { x: 280, y: 280, w: 60, h: 60, color: "#444", label: "배전반" }
-                ]
-            },
-            4: {
-                title: "[1층] FUNGYM 스마트 체육관",
-                bgColor: "#1a252a",
-                objects: [
-                    { x: 120, y: 20, w: 120, h: 60, color: "#00ffff", label: "AI 메인 보드" },
-                    { x: 30, y: 150, w: 60, h: 120, color: "#2f4f4f", label: "스마트 기구" },
-                    { x: 270, y: 150, w: 60, h: 120, color: "#2f4f4f", label: "스마트 기구" }
-                ]
-            }
-        };
-
         let myId = ""; 
         let myName = "";
-        let myPos = { x: 180, y: 320 }; // 모든 층의 시작점 (문 앞 느낌)
-        let currentStage = 1; // 현재 층
         let allPlayersData = {};
         
-        const speed = 4;
-        const keys = { w: false, a: false, s: false, d: false };
-        const canvas = document.getElementById('map-canvas');
+        // 🏃‍♂️ 플레이어 물리 및 상태 데이터 (횡스크롤)
+        const groundY = 190; // 바닥 높이
+        let myState = {
+            x: 60,
+            y: groundY,
+            vy: 0,
+            isJumping: false,
+            hp: 5.0, // 하트 5개 (반 개 단위: 0.5)
+            invincible: 0 // 피격 후 무적 시간 틱
+        };
+
+        // 🚧 장애물 시스템 데이터
+        let obstacles = [];
+        let obstacleTimer = 0;
+
+        const canvas = document.getElementById('side-canvas');
         const ctx = canvas.getContext('2d');
 
-        // 로그인 -> 인트로 화면
         function showIntro() {
             myName = document.getElementById('player-name').value.trim();
             if (!myName) return alert("이름을 입력해주세요.");
-            
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('intro-screen').style.display = 'block';
         }
 
-        // 인트로 -> 맵 진입 (서버 등록)
         function joinGameAndStart() {
             const randomChar = SHAPE_POOL[Math.floor(Math.random() * SHAPE_POOL.length)];
             const playerRef = db.ref('gameRoom/players').push();
@@ -240,10 +191,11 @@
 
             playerRef.set({
                 name: myName,
-                x: myPos.x,
-                y: myPos.y,
+                x: myState.x,
+                y: myState.y,
                 color: randomChar.color,
-                shape: randomChar.shape
+                shape: randomChar.shape,
+                hp: 5.0
             });
             playerRef.onDisconnect().remove();
 
@@ -254,166 +206,173 @@
         }
 
         function startMultiplayer() {
-            // 1. 유저 실시간 동기화
+            // 1. 실시간 플레이어 데이터 수신 (동시 접속)
             db.ref('gameRoom/players').on('value', (snapshot) => {
                 allPlayersData = snapshot.val() || {};
-                const count = Object.keys(allPlayersData).length;
-                document.getElementById('online-count').innerText = `접속자: ${count}명`;
-            });
-
-            // 2. 💡 스테이지(층수) 실시간 동기화 (누군가 층을 바꾸면 모두가 바뀜)
-            db.ref('gameRoom/gameState/stage').on('value', (snapshot) => {
-                let stageVal = snapshot.val();
-                if(!stageVal) { // 서버에 스테이지 값이 없으면 1로 세팅
-                    db.ref('gameRoom/gameState/stage').set(1);
-                    stageVal = 1;
-                }
-                
-                // 층이 바뀌었을 경우
-                if(currentStage !== stageVal) {
-                    currentStage = stageVal;
-                    // 위치 초기화
-                    myPos.x = 180; myPos.y = 320; 
-                    db.ref('gameRoom/players/' + myId).update({ x: myPos.x, y: myPos.y });
-                }
-                
-                document.getElementById('stage-title').innerText = STAGE_DATA[currentStage].title;
             });
 
             setupControls();
             requestAnimationFrame(gameLoop);
         }
 
-        // 누군가 [다음 층 이동] 버튼을 누르면 서버의 stage 값을 증가시킴
-        function advanceStage() {
-            if (currentStage >= 4) {
-                alert("탈출에 성공했습니다!");
-                return;
-            }
-            db.ref('gameRoom/gameState/stage').set(currentStage + 1);
-        }
-
-        // --- 🕹️ 조작 컨트롤 ---
+        // --- 🕹️ 점프 조작 세팅 ---
         function setupControls() {
             window.addEventListener('keydown', e => {
-                const k = e.key.toLowerCase();
-                if (['w','a','s','d','arrowup','arrowleft','arrowdown','arrowright'].includes(k)) {
-                    if (k==='w'||k==='arrowup') keys.w = true;
-                    if (k==='a'||k==='arrowleft') keys.a = true;
-                    if (k==='s'||k==='arrowdown') keys.s = true;
-                    if (k==='d'||k==='arrowright') keys.d = true;
+                if (e.code === 'Space' || e.key === ' ') {
+                    e.preventDefault();
+                    triggerJump();
                 }
             });
-            window.addEventListener('keyup', e => {
-                const k = e.key.toLowerCase();
-                if (k==='w'||k==='arrowup') keys.w = false;
-                if (k==='a'||k==='arrowleft') keys.a = false;
-                if (k==='s'||k==='arrowdown') keys.s = false;
-                if (k==='d'||k==='arrowright') keys.d = false;
-            });
 
-            bindVirtualBtn('btn-w', 'w'); bindVirtualBtn('btn-a', 'a');
-            bindVirtualBtn('btn-s', 's'); bindVirtualBtn('btn-d', 'd');
+            const jumpBtn = document.getElementById('btn-jump');
+            const handleJump = (e) => {
+                e.preventDefault();
+                triggerJump();
+            };
+            jumpBtn.addEventListener('touchstart', handleJump, { passive: false });
+            jumpBtn.addEventListener('mousedown', handleJump);
         }
 
-        function bindVirtualBtn(id, keyName) {
-            const btn = document.getElementById(id);
-            const press = (e) => { e.preventDefault(); keys[keyName] = true; btn.classList.add('pressed'); };
-            const release = (e) => { e.preventDefault(); keys[keyName] = false; btn.classList.remove('pressed'); };
-            btn.addEventListener('touchstart', press, { passive: false });
-            btn.addEventListener('touchend', release);
-            btn.addEventListener('mousedown', press);
-            btn.addEventListener('mouseup', release);
-            btn.addEventListener('mouseleave', release);
+        function triggerJump() {
+            if (!myState.isJumping && myState.hp > 0) {
+                myState.vy = -10.5; // 점프 힘
+                myState.isJumping = true;
+            }
         }
 
-        // --- 🔄 메인 프레임 루프 ---
-        let lastMoveTime = 0;
+        // --- 🔄 메인 프레임 루프 (60FPS 게임엔진) ---
+        let lastSyncTime = 0;
 
         function gameLoop() {
-            let nx = myPos.x;
-            let ny = myPos.y;
+            if (myState.hp > 0) {
+                // 물리 엔진: 중력 적용
+                myState.vy += 0.55;
+                myState.y += myState.vy;
 
-            if (keys.w) ny -= speed;
-            if (keys.s) ny += speed;
-            if (keys.a) nx -= speed;
-            if (keys.d) nx += speed;
+                // 바닥 착지 체크
+                if (myState.y >= groundY) {
+                    myState.y = groundY;
+                    myState.vy = 0;
+                    myState.isJumping = false;
+                }
 
-            // 1. 맵 밖으로 못 나가게 방지 (캐릭터 반지름 12 적용)
-            if (nx < 12) nx = 12; if (nx > 348) nx = 348;
-            if (ny < 12) ny = 12; if (ny > 348) ny = 348;
+                // 무적 시간 감소
+                if (myState.invincible > 0) myState.invincible--;
 
-            // 2. 💡 가구(오브젝트) 물리 충돌 체크
-            let isCollision = false;
-            const objs = STAGE_DATA[currentStage].objects;
-            
-            for (let obj of objs) {
-                // AABB 충돌 알고리즘 (캐릭터를 24x24 박스로 간주)
-                if (nx - 12 < obj.x + obj.w && nx + 12 > obj.x &&
-                    ny - 12 < obj.y + obj.h && ny + 12 > obj.y) {
-                    isCollision = true;
-                    break;
+                // 장애물 생성 (일정 주기마다)
+                obstacleTimer++;
+                if (obstacleTimer > 90 + Math.random() * 50) { // 무작위 간격
+                    obstacles.push({ x: 380, y: groundY - 15, w: 20, h: 25, speed: 4.5 });
+                    obstacleTimer = 0;
+                }
+
+                // 장애물 이동 및 충돌 판정
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    obstacles[i].x -= obstacles[i].speed;
+
+                    // 화면 밖으로 나간 장애물 제거
+                    if (obstacles[i].x < -30) {
+                        obstacles.splice(i, 1);
+                        continue;
+                    }
+
+                    // AABB 충돌 체크 (내 캐릭터와 장애물)
+                    // 캐릭터 위치: (myState.x, myState.y - 12) 크기 24x24 박스
+                    if (myState.invincible === 0 &&
+                        myState.x - 12 < obstacles[i].x + obstacles[i].w &&
+                        myState.x + 12 > obstacles[i].x &&
+                        (myState.y - 24) < obstacles[i].y + obstacles[i].h &&
+                        myState.y > obstacles[i].y) {
+                        
+                        // 충돌 시 하트 0.5개 (반 개) 차감
+                        myState.hp = Math.max(0, myState.hp - 0.5);
+                        myState.invincible = 45; // 45프레임 동안 무적 (깜빡임 효과 유도)
+                    }
+                }
+
+                // 💡 내 위치 및 체력을 Firebase 서버로 실시간 동기화
+                if (Date.now() - lastSyncTime > 35) {
+                    db.ref('gameRoom/players/' + myId).update({
+                        y: myState.y,
+                        hp: myState.hp
+                    });
+                    lastSyncTime = Date.now();
                 }
             }
 
-            // 충돌하지 않았을 때만 좌표 확정
-            if (!isCollision && (nx !== myPos.x || ny !== myPos.y)) {
-                myPos.x = nx;
-                myPos.y = ny;
+            // 하트 UI 텍스트 렌더링
+            updateHpUI();
 
-                if (Date.now() - lastMoveTime > 30) {
-                    db.ref('gameRoom/players/' + myId).update({ x: myPos.x, y: myPos.y });
-                    lastMoveTime = Date.now();
-                }
-            }
-
-            drawMap();
+            // 캔버스 그리기
+            drawSideScrollMap();
             requestAnimationFrame(gameLoop);
         }
 
-        // --- 🎨 캔버스 렌더링 ---
-        function drawMap() {
-            // 1. 현재 층 바닥 색상
-            ctx.fillStyle = STAGE_DATA[currentStage].bgColor;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            // 2. 가구/오브젝트 그리기
-            const objs = STAGE_DATA[currentStage].objects;
-            for (let obj of objs) {
-                // 그림자 효과
-                ctx.fillStyle = "rgba(0,0,0,0.5)";
-                ctx.fillRect(obj.x + 3, obj.y + 3, obj.w, obj.h);
-                
-                // 가구 본체
-                ctx.fillStyle = obj.color;
-                ctx.fillRect(obj.x, obj.y, obj.w, obj.h);
-                ctx.strokeStyle = "#111";
-                ctx.lineWidth = 2;
-                ctx.strokeRect(obj.x, obj.y, obj.w, obj.h);
-
-                // 가구 이름(라벨) 표시
-                ctx.fillStyle = "rgba(255,255,255,0.7)";
-                ctx.font = "11px sans-serif";
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(obj.label, obj.x + obj.w / 2, obj.y + obj.h / 2);
-            }
-
-            // 3. 서버에 등록된 캐릭터들 그리기
-            Object.keys(allPlayersData).forEach(key => {
-                const p = allPlayersData[key];
-                if(p.x !== undefined && p.y !== undefined) {
-                    drawShape(p.x, p.y, p.color, p.shape);
-                    ctx.fillStyle = "white";
-                    ctx.font = "bold 11px sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.textBaseline = "alphabetic";
-                    ctx.fillText(p.name, p.x, p.y - 18);
-                }
-            });
+        function updateHpUI() {
+            let fullHearts = Math.floor(myState.hp);
+            let hasHalf = (myState.hp % 1 !== 0);
+            let heartStr = "❤️".repeat(fullHearts) + (hasHalf ? "💔" : "") + "🖤".repeat(5 - Math.ceil(myState.hp));
+            document.getElementById('hp-display').innerText = heartStr;
         }
 
-        // --- 📐 캐릭터 모양 그리기 ---
+        // --- 🎨 횡스크롤 캔버스 렌더링 ---
+        function drawSideScrollMap() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 1. 배경 (복도 느낌의 선)
+            ctx.strokeStyle = "#2e3240";
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY + 12); ctx.lineTo(380, groundY + 12);
+            ctx.stroke();
+
+            // 바닥 그리기
+            ctx.fillStyle = "#1e222d";
+            ctx.fillRect(0, groundY + 12, canvas.width, canvas.height - (groundY + 12));
+
+            // 2. 장애물(드론) 그리기
+            ctx.fillStyle = "#ff4b4b";
+            for (let obs of obstacles) {
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = 1;
+                ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+            }
+
+            // 3. 서버에 접속한 모든 플레이어 렌더링 (동시 접속자 확인용)
+            Object.keys(allPlayersData).forEach(key => {
+                const p = allPlayersData[key];
+                if (p.y !== undefined) {
+                    // 내가 피격당했을 때 깜빡이는 효과 (무적 시간 동안)
+                    if (key === myId && myState.invincible > 0 && Math.floor(myState.invincible / 4) % 2 === 0) {
+                        return; // 깜빡임 연출을 위해 스킵
+                    }
+
+                    drawShape(myState.x, p.y, p.color, p.shape); // X는 고정, Y는 각자의 점프 상태 반영
+
+                    // 이름 및 체력 표시
+                    ctx.fillStyle = "white";
+                    ctx.font = "bold 10px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText(p.name, myState.x, p.y - 20);
+                }
+            });
+
+            // 게임 오버 처리
+            if (myState.hp <= 0) {
+                ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#ff4b4b";
+                ctx.font = "bold 22px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 10);
+                ctx.fillStyle = "white";
+                ctx.font = "13px sans-serif";
+                ctx.fillText("새로고침하여 다시 도전하세요!", canvas.width / 2, canvas.height / 2 + 20);
+            }
+        }
+
+        // --- 📐 도형 렌더링 함수 ---
         function drawShape(x, y, color, shape) {
             ctx.fillStyle = color;
             ctx.beginPath();
