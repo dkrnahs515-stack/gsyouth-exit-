@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>강서청소년회관 방탈출 : 자정의 메아리</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0a;
+            --panel-bg: #1a1c23;
+            --primary: #ff5e62; 
+            --primary-glow: #ff9966;
+            --text-main: #f0f0f0;
+            --text-muted: #888;
+            --danger: #ff4b4b;
+            --success: #00e676;
+            --object: #5c3a21; /* 가구 색상 */
+        }
+
+        body {
+            margin: 0; background-color: var(--bg-dark); color: var(--text-main);
+            font-family: 'Pretendard', sans-serif; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh; overflow: hidden; /* 스크롤 방지 */
+            touch-action: none; /* 모바일 터치 시 화면 움직임 방지 */
+        }
+
+        .container { width: 100%; max-width: 500px; padding: 20px; box-sizing: border-box; flex-grow: 1; display: flex; flex-direction: column; }
+        
+        .screen { display: none; flex-direction: column; align-items: center; animation: fadeIn 0.4s ease; width: 100%; }
+        .screen.active { display: flex; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h1, h2, h3 { text-align: center; margin-top: 0; margin-bottom: 15px; }
+        h1 { color: var(--primary-glow); text-shadow: 0 0 10px rgba(255, 153, 102, 0.5); }
+        p { line-height: 1.5; text-align: center; word-break: keep-all; margin: 10px 0; }
+        
+        .role-badge { color: var(--success); font-weight: 800; display: inline-block; background: rgba(0, 230, 118, 0.1); padding: 2px 8px; border-radius: 4px; }
+        .input-group { width: 100%; margin-bottom: 12px; }
+        input { width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: white; font-size: 1rem; box-sizing: border-box; outline: none; }
+        input:focus { border-color: var(--primary-glow); box-shadow: 0 0 8px rgba(255, 153, 102, 0.5); }
+
+        .btn-main { width: 100%; padding: 15px; margin-top: 15px; background: linear-gradient(45deg, var(--primary), var(--primary-glow)); color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-main:active { transform: scale(0.98); }
+
+        /* Stage 1: 청다방 */
+        .frequency-box { width: 100%; height: 40px; background: #222; border-radius: 20px; position: relative; margin: 20px 0; overflow: hidden; border: 2px solid #444; }
+        .target-zone { position: absolute; top: 0; left: 40%; width: 20%; height: 100%; background: rgba(0, 230, 118, 0.3); border-left: 2px solid var(--success); border-right: 2px solid var(--success); }
+        .moving-bar { position: absolute; top: 0; left: 0; width: 8px; height: 100%; background: white; box-shadow: 0 0 10px white; }
+        .sync-dots { display: flex; gap: 10px; margin-bottom: 10px; }
+        .dot { width: 15px; height: 15px; border-radius: 50%; background: #333; }
+        .dot.active { background: var(--success); box-shadow: 0 0 10px var(--success); }
+
+        /* Stage 2: 2D 사무실 탐색 */
+        #game-map { position: relative; width: 100%; max-width: 320px; height: 320px; background: #1a1a1a; border: 3px solid #333; border-radius: 8px; overflow: hidden; margin: 10px 0; }
+        #player { position: absolute; width: 24px; height: 24px; background: #4dabf7; border-radius: 50%; z-index: 10; transition: transform 0.1s; border: 2px solid #fff; box-sizing: border-box; }
+        .game-obj { position: absolute; background: var(--object); border: 2px solid #3d2311; border-radius: 4px; box-sizing: border-box; }
+        
+        #dialogue-box { width: 100%; max-width: 320px; min-height: 50px; background: rgba(0,0,0,0.8); border: 1px solid #555; border-radius: 8px; padding: 10px; box-sizing: border-box; text-align: center; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; }
+
+        /* 가상 컨트롤러 UI */
+        .controller-ui { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 320px; margin-top: 15px; }
+        .d-pad { display: grid; grid-template-columns: 50px 50px 50px; grid-template-rows: 50px 50px; gap: 5px; }
+        .d-btn { width: 100%; height: 100%; background: #333; color: white; border: 2px solid #555; border-radius: 8px; font-weight: bold; font-size: 1rem; user-select: none; -webkit-user-select: none; }
+        .d-btn:active, .d-btn.pressed { background: #555; border-color: #fff; }
+        .d-btn.up { grid-column: 2; grid-row: 1; }
+        .d-btn.left { grid-column: 1; grid-row: 2; }
+        .d-btn.down { grid-column: 2; grid-row: 2; }
+        .d-btn.right { grid-column: 3; grid-row: 2; }
+        
+        .action-pad { display: flex; justify-content: center; align-items: center; }
+        .action-btn { width: 75px; height: 75px; background: linear-gradient(135deg, var(--primary), #d84347); color: white; border: 3px solid #fff; border-radius: 50%; font-weight: bold; font-size: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.5); user-select: none; -webkit-user-select: none; }
+        .action-btn:active, .action-btn.pressed { transform: scale(0.95); background: #d84347; }
+
+        .footer { margin-top: auto; padding: 15px 0; color: var(--text-muted); font-size: 0.8rem; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- 0. 참가자 설정 화면 -->
+        <div id="screen-setup" class="screen active">
+            <h1>자정의 메아리</h1>
+            <p>5명의 역할을 정하고 방탈출을 시작하세요.</p>
+            <div id="name-inputs" style="width: 100%;">
+                <div class="input-group"><input type="text" id="p1" placeholder="참가자 1 (3층 조작)" required></div>
+                <div class="input-group"><input type="text" id="p2" placeholder="참가자 2 (2층 탐색)" required></div>
+                <div class="input-group"><input type="text" id="p3" placeholder="참가자 3 (지하 조작)" required></div>
+                <div class="input-group"><input type="text" id="p4" placeholder="참가자 4 (1층 AI 해제)" required></div>
+                <div class="input-group"><input type="text" id="p5" placeholder="참가자 5 (최종 재부팅)" required></div>
+            </div>
+            <button class="btn-main" onclick="assignRoles()">역할 부여 및 시작</button>
+        </div>
+
+        <!-- 1. 역할 확인 화면 -->
+        <div id="screen-roles" class="screen">
+            <h2>부여된 역할</h2>
+            <div id="role-list" style="width:100%; background: var(--panel-bg); padding: 15px; border-radius: 10px; margin-bottom: 15px; text-align: left; font-size: 0.95rem;"></div>
+            <button class="btn-main" onclick="readyStage1()">확인 완료</button>
+        </div>
+
+        <!-- 2. 기기 전달 화면 공통 -->
+        <div id="screen-pass" class="screen">
+            <h2 id="pass-title">기기 전달</h2>
+            <p id="pass-desc" style="font-size: 1.1rem; line-height: 1.8;"></p>
+            <button class="btn-main" id="pass-btn" onclick="executeStage()">조작자 확인 및 시작</button>
+        </div>
+
+        <!-- Stage 1: 3층 크리에이터실 청다방 -->
+        <div id="screen-stage1" class="screen">
+            <h2>Stage 1: 3층 청다방</h2>
+            <p>막대가 <strong>초록 영역</strong>일 때 [SYNC]를 누르세요!</p>
+            <div class="sync-dots">
+                <div class="dot" id="dot-1"></div>
+                <div class="dot" id="dot-2"></div>
+                <div class="dot" id="dot-3"></div>
+            </div>
+            <div class="frequency-box"><div class="target-zone"></div><div class="moving-bar" id="moving-bar"></div></div>
+            <button class="btn-main" id="sync-btn" onclick="checkSync()" style="margin-top: 0;">SYNC (맞추기)</button>
+            <p id="stage1-msg" style="font-weight: bold; margin-top: 15px; height: 40px;"></p>
+        </div>
+
+        <!-- Stage 2: 2층 사무실 (RPG 탐색) -->
+        <div id="screen-stage2" class="screen">
+            <h2>Stage 2: 2층 사무실</h2>
+            <p style="font-size:0.9rem; margin:0;">캐비닛을 조사(Space)하여 출입 카드를 찾으세요!</p>
+            
+            <div id="game-map">
+                <div id="player"></div>
+                <!-- 가구 객체들은 JS에서 자동 렌더링 -->
+            </div>
+            
+            <div id="dialogue-box">방향키로 이동하고 근처에서 대화버튼을 누르세요.</div>
+
+            <!-- 가상 컨트롤러 -->
+            <div class="controller-ui">
+                <div class="d-pad">
+                    <button class="d-btn up" id="btn-w">W</button>
+                    <button class="d-btn left" id="btn-a">A</button>
+                    <button class="d-btn down" id="btn-s">S</button>
+                    <button class="d-btn right" id="btn-d">D</button>
+                </div>
+                <div class="action-pad">
+                    <button class="action-btn" id="btn-space">대화<br>(Space)</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">강서청소년회관 &lt;바이브 코딩&gt; 참가자 제작</div>
+    </div>
+
+    <script>
+        const ROLES = [
+            "온에어 디렉터 (3층 조작)",
+            "행정 마스터 (2층 사무실 이동)",
+            "아지트 탐험가 (지하 조작)",
+            "AI 제어자 (1층 FUNGYM 제어)",
+            "스마트짐 마스터 (최종 재부팅)"
+        ];
+        
+        let players = [];
+        let currentStage = 1;
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function assignRoles() {
+            players = [];
+            for(let i = 1; i <= 5; i++) {
+                const name = document.getElementById(`p${i}`).value.trim() || `참가자 ${i}`;
+                players.push({ name: name, role: ROLES[i-1] });
+            }
+            let roleHtml = "";
+            players.forEach(p => {
+                roleHtml += `<div style="margin-bottom: 8px;"><strong>${p.name}</strong> 👉 <span class="role-badge">${p.role}</span></div>`;
+            });
+            document.getElementById('role-list').innerHTML = roleHtml;
+            showScreen('screen-roles');
+        }
+
+        function readyStage1() {
+            currentStage = 1;
+            document.getElementById('pass-title').innerText = "3층 청다방 도착";
+            document.getElementById('pass-desc').innerHTML = `<strong>[온에어 디렉터]</strong><br><span style="color:var(--primary-glow); font-size:1.5rem; font-weight:bold;">${players[0].name}</span> 님이 기기를 잡아주세요.`;
+            showScreen('screen-pass');
+        }
+
+        function readyStage2() {
+            currentStage = 2;
+            document.getElementById('pass-title').innerText = "2층 사무실 진입";
+            document.getElementById('pass-desc').innerHTML = `<strong>[행정 마스터]</strong><br><span style="color:var(--primary-glow); font-size:1.5rem; font-weight:bold;">${players[1].name}</span> 님이 기기를 넘겨받으세요.<br><br>나머지 인원은 단서를 함께 추리하세요!`;
+            showScreen('screen-pass');
+        }
+
+        function executeStage() {
+            if (currentStage === 1) startStage1();
+            if (currentStage === 2) startStage2();
+        }
+
+        // ==========================================
+        // 🧩 Stage 1: 청다방 주파수 퍼즐 (기존 로직 유지)
+        // ==========================================
+        let syncCount = 0, barPosition = 0, barDirection = 1, barSpeed = 2, gameInterval;
+        let isStage1Active = false;
+
+        function startStage1() {
+            showScreen('screen-stage1');
+            syncCount = 0; barSpeed = 2.5; isStage1Active = true;
+            document.getElementById('sync-btn').disabled = false;
+            document.getElementById('stage1-msg').innerText = "";
+            for(let i=1; i<=3; i++) document.getElementById(`dot-${i}`).classList.remove('active');
+            
+            gameInterval = setInterval(() => {
+                if (!isStage1Active) return;
+                barPosition += barDirection * barSpeed;
+                if (barPosition >= 96) { barPosition = 96; barDirection = -1; }
+                if (barPosition <= 0) { barPosition = 0; barDirection = 1; }
+                document.getElementById('moving-bar').style.left = `${barPosition}%`;
+            }, 20);
+        }
+
+        function checkSync() {
+            if (!isStage1Active) return;
+            if (barPosition >= 36 && barPosition <= 60) {
+                syncCount++;
+                document.getElementById(`dot-${syncCount}`).classList.add('active');
+                barSpeed += 1.5;
+                document.getElementById('stage1-msg').innerHTML = "<span style='color:var(--success)'>✅ 정확합니다!</span>";
+                if (syncCount >= 3) {
+                    isStage1Active = false; clearInterval(gameInterval);
+                    document.getElementById('sync-btn').style.display = 'none';
+                    const clue1 = Math.floor(Math.random() * 9) + 1;
+                    document.getElementById('stage1-msg').innerHTML = `<span style='color:var(--success)'>🎉 복구 완료! 단서 번호: [ ${clue1} ]</span>`;
+                    
+                    const nextBtn = document.createElement('button');
+                    nextBtn.className = "btn-main"; nextBtn.innerText = "2층 사무실로 이동";
+                    nextBtn.onclick = readyStage2;
+                    document.getElementById('screen-stage1').appendChild(nextBtn);
+                }
+            } else {
+                document.getElementById('stage1-msg').innerHTML = "<span style='color:var(--danger)'>❌ 타이밍이 빗나갔습니다!</span>";
+            }
+        }
+
+        // ==========================================
+        // 🧩 Stage 2: 2층 사무실 (WASD 2D 탑다운 탐색)
+        // ==========================================
+        const keys = { w: false, a: false, s: false, d: false, space: false };
+        let prevSpace = false;
+        
+        // 키보드 이벤트
+        window.addEventListener('keydown', e => {
+            if(currentStage !== 2) return;
+            const key = e.key.toLowerCase();
+            if(['w','a','s','d'].includes(key)) keys[key] = true;
+            if(e.code === 'Space' || key === ' ') { keys.space = true; e.preventDefault(); }
+            updateButtonUI();
+        });
+        window.addEventListener('keyup', e => {
+            if(currentStage !== 2) return;
+            const key = e.key.toLowerCase();
+            if(['w','a','s','d'].includes(key)) keys[key] = false;
+            if(e.code === 'Space' || key === ' ') keys.space = false;
+            updateButtonUI();
+        });
+
+        // 가상 컨트롤러 바인딩
+        function bindVirtualBtn(btnId, keyName) {
+            const btn = document.getElementById(btnId);
+            const press = (e) => { e.preventDefault(); keys[keyName] = true; btn.classList.add('pressed'); };
+            const release = (e) => { e.preventDefault(); keys[keyName] = false; btn.classList.remove('pressed'); };
+            btn.addEventListener('touchstart', press, {passive: false});
+            btn.addEventListener('touchend', release);
+            btn.addEventListener('mousedown', press);
+            btn.addEventListener('mouseup', release);
+            btn.addEventListener('mouseleave', release);
+        }
+
+        bindVirtualBtn('btn-w', 'w');
+        bindVirtualBtn('btn-a', 'a');
+        bindVirtualBtn('btn-s', 's');
+        bindVirtualBtn('btn-d', 'd');
+        bindVirtualBtn('btn-space', 'space');
+
+        function updateButtonUI() {
+            document.getElementById('btn-w').classList.toggle('pressed', keys.w);
+            document.getElementById('btn-a').classList.toggle('pressed', keys.a);
+            document.getElementById('btn-s').classList.toggle('pressed', keys.s);
+            document.getElementById('btn-d').classList.toggle('pressed', keys.d);
+            document.getElementById('btn-space').classList.toggle('pressed', keys.space);
+        }
+
+        let stage2Loop;
+        let isStage2Active = false;
+        const player = { x: 140, y: 140, size: 24, speed: 3 };
+        
+        // 맵 내의 가구(조사 가능 대상) 목록
+        const objects = [
+            { id: 'desk1', x: 20, y: 20, w: 80, h: 50, desc: "먼지 쌓인 낡은 책상이다. 아무것도 없다." },
+            { id: 'desk2', x: 20, y: 120, w: 80, h: 50, desc: "서랍이 굳게 잠겨있다." },
+            { id: 'cabinet1', x: 220, y: 20, w: 60, h: 100, desc: "텅 빈 캐비닛이다." },
+            { id: 'cabinet2', x: 220, y: 200, w: 60, h: 80, desc: "비밀문서가 있지만 카드키는 아니다.", isTarget: false } // 나중에 하나를 정답으로 세팅
+        ];
+
+        function startStage2() {
+            showScreen('screen-stage2');
+            isStage2Active = true;
+            player.x = 140; player.y = 140; // 중앙 스폰
+            document.getElementById('dialogue-box').innerHTML = "캐릭터를 이동하여 수상한 곳을 조사하세요.";
+            
+            // 맵에 오브젝트 렌더링
+            const mapEl = document.getElementById('game-map');
+            document.querySelectorAll('.game-obj').forEach(e => e.remove()); // 초기화
+            
+            // 정답을 랜덤 캐비닛에 부여
+            const targetIndex = Math.floor(Math.random() * objects.length);
+            objects.forEach((obj, idx) => {
+                obj.isTarget = (idx === targetIndex);
+                if(obj.isTarget) obj.desc = "✅ 바닥에 떨어진 <b>[출입 카드키]</b>를 발견했습니다!";
+                
+                const el = document.createElement('div');
+                el.className = 'game-obj';
+                el.style.left = obj.x + 'px'; el.style.top = obj.y + 'px';
+                el.style.width = obj.w + 'px'; el.style.height = obj.h + 'px';
+                mapEl.appendChild(el);
+            });
+
+            stage2Loop = requestAnimationFrame(updateStage2);
+        }
+
+        function updateStage2() {
+            if(!isStage2Active) return;
+
+            // 이동 처리 (AABB 벽 충돌 포함 간단 구현)
+            let nx = player.x;
+            let ny = player.y;
+
+            if(keys.w) ny -= player.speed;
+            if(keys.s) ny += player.speed;
+            if(keys.a) nx -= player.speed;
+            if(keys.d) nx += player.speed;
+
+            // 맵 경계 (320x320)
+            if(nx < 0) nx = 0; if(nx > 320 - player.size) nx = 320 - player.size;
+            if(ny < 0) ny = 0; if(ny > 320 - player.size) ny = 320 - player.size;
+
+            // 가구 충돌 체크 (안 겹치게)
+            let collision = false;
+            for(let obj of objects) {
+                if(nx < obj.x + obj.w && nx + player.size > obj.x &&
+                   ny < obj.y + obj.h && ny + player.size > obj.y) {
+                    collision = true; break;
+                }
+            }
+
+            if(!collision) { player.x = nx; player.y = ny; }
+            
+            // 캐릭터 UI 갱신
+            document.getElementById('player').style.transform = `translate(${player.x}px, ${player.y}px)`;
+
+            // 대화(상호작용) 버튼 단발성 처리
+            if(keys.space && !prevSpace) {
+                interact();
+            }
+            prevSpace = keys.space;
+
+            stage2Loop = requestAnimationFrame(updateStage2);
+        }
+
+        function interact() {
+            let foundObj = null;
+            // 상호작용 범위 체크 (플레이어 중심과 오브젝트 중심 거리)
+            const px = player.x + player.size/2;
+            const py = player.y + player.size/2;
+
+            for(let obj of objects) {
+                const ox = obj.x + obj.w/2;
+                const oy = obj.y + obj.h/2;
+                // 맨해튼 거리로 근접 체크 (대략적인 범위 40px 이내)
+                if(Math.abs(px - ox) < (obj.w/2 + 30) && Math.abs(py - oy) < (obj.h/2 + 30)) {
+                    foundObj = obj;
+                    break;
+                }
+            }
+
+            const diag = document.getElementById('dialogue-box');
+            if(foundObj) {
+                diag.innerHTML = foundObj.desc;
+                if(foundObj.isTarget) {
+                    isStage2Active = false; // 루프 정지
+                    diag.style.color = "var(--success)";
+                    const clue2 = Math.floor(Math.random() * 9) + 1;
+                    setTimeout(() => {
+                        diag.innerHTML = `🎉 카드 뒷면에 숫자 <strong>[ ${clue2} ]</strong> 가 적혀있습니다.<br>`;
+                        const nextBtn = document.createElement('button');
+                        nextBtn.className = "btn-main"; 
+                        nextBtn.style.padding = "5px"; nextBtn.style.marginTop = "10px";
+                        nextBtn.innerText = "지하 아지트로 이동 (다음 층)";
+                        nextBtn.onclick = () => alert("3스테이지(지하 아지트) 구현 단계로 이동!");
+                        diag.appendChild(nextBtn);
+                    }, 1500);
+                }
+            } else {
+                diag.innerHTML = "근처에 조사할 물건이 없습니다.";
+            }
+        }
+    </script>
+</body>
+</html>
