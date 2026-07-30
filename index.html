@@ -39,51 +39,51 @@
             background: var(--panel-bg); padding: 18px; border-radius: 12px;
             width: 100%; box-sizing: border-box; border: 1px solid #333; text-align: center;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-height: 90vh; overflow-y: auto;
         }
 
         input {
-            width: 90%; padding: 12px; margin: 8px 0; border-radius: 8px;
+            width: 90%; padding: 10px; margin: 6px 0; border-radius: 8px;
             border: 1px solid #555; background: #252830; color: white;
             font-size: 1rem; text-align: center; outline: none;
         }
         input:focus { border-color: var(--primary-glow); box-shadow: 0 0 8px rgba(143,148,251,0.5); }
 
         .char-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0;
         }
         .char-card {
             background: #252830; border: 2px solid #444; border-radius: 8px;
-            padding: 6px 4px; cursor: pointer; transition: 0.2s; font-size: 0.75rem; text-align: center;
+            padding: 5px 2px; cursor: pointer; transition: 0.2s; font-size: 0.7rem; text-align: center;
         }
-        .char-card.selected { border-color: var(--primary-glow); background: rgba(143, 148, 251, 0.2); }
-        .char-card div:first-child { font-size: 1.5rem; margin-bottom: 2px; }
+        .char-card.selected { border-color: var(--primary-glow); background: rgba(143, 148, 251, 0.25); }
+        .char-card div:first-child { font-size: 1.3rem; margin-bottom: 2px; }
 
         .env-btn-group {
-            display: flex; gap: 10px; margin: 12px 0;
+            display: flex; gap: 10px; margin: 8px 0;
         }
         .env-btn {
-            flex: 1; padding: 12px; background: #252830; border: 2px solid #555; border-radius: 8px;
-            color: #ccc; font-weight: bold; cursor: pointer; font-size: 0.95rem;
+            flex: 1; padding: 10px; background: #252830; border: 2px solid #555; border-radius: 8px;
+            color: #ccc; font-weight: bold; cursor: pointer; font-size: 0.9rem;
         }
         .env-btn.selected { border-color: var(--primary-glow); background: rgba(143, 148, 251, 0.25); color: white; }
 
         button {
-            width: 100%; padding: 14px; margin-top: 10px;
+            width: 100%; padding: 12px; margin-top: 8px;
             background: linear-gradient(45deg, var(--primary), var(--primary-glow));
             color: white; border: none; border-radius: 8px; font-size: 1.1rem;
             font-weight: bold; cursor: pointer; transition: 0.2s;
         }
         button:active { transform: scale(0.97); }
 
-        .story-text { line-height: 1.4; font-size: 0.9rem; text-align: left; margin-bottom: 12px; word-break: keep-all; }
+        .story-text { line-height: 1.4; font-size: 0.85rem; text-align: left; margin-bottom: 10px; word-break: keep-all; }
         .story-text span { color: var(--primary-glow); font-weight: bold; }
 
-        /* 🗺️ 화면 크기 가변형 캔버스 컨테이너 */
         #game-area { display: none; flex-direction: column; align-items: center; width: 100%; }
 
         .status-bar {
             width: 100%; max-width: var(--canvas-w, 680px); background: rgba(255,255,255,0.05);
-            padding: 8px 12px; border-radius: 8px; margin-bottom: 6px;
+            padding: 6px 12px; border-radius: 8px; margin-bottom: 4px;
             display: flex; justify-content: space-between; align-items: center;
             font-size: 0.85rem; box-sizing: border-box; font-weight: bold; border: 1px solid #333;
         }
@@ -95,7 +95,7 @@
 
         .control-panel {
             width: 100%; max-width: var(--canvas-w, 680px); display: flex; gap: 10px;
-            align-items: center; margin-top: 10px; box-sizing: border-box;
+            align-items: center; margin-top: 8px; box-sizing: border-box;
         }
 
         .action-btn {
@@ -107,7 +107,7 @@
         .attack-btn { flex: 1; background: linear-gradient(135deg, #ff4b4b, #ff7675); }
         .action-btn:active { transform: scale(0.96); }
 
-        .footer { margin-top: auto; padding: 6px 0; color: var(--text-muted); font-size: 0.75rem; }
+        .footer { margin-top: auto; padding: 4px 0; color: var(--text-muted); font-size: 0.75rem; }
     </style>
 </head>
 <body>
@@ -119,23 +119,29 @@
         <div id="login-screen" class="box">
             <h2>접속 환경 및 캐릭터 선택</h2>
             
-            <div style="font-size: 0.85rem; text-align: left; margin-top: 4px; color: var(--text-muted);">접속 환경 선택:</div>
+            <div style="font-size: 0.8rem; text-align: left; margin-top: 2px; color: var(--text-muted);">접속 환경 선택:</div>
             <div class="env-btn-group">
-                <div class="env-btn selected" onclick="setEnvironment('pc', this)">💻 PC 모드 (넓은 화면)</div>
-                <div class="env-btn" onclick="setEnvironment('mobile', this)">📱 모바일 모드 (맞춤 화면)</div>
+                <div class="env-btn selected" onclick="setEnvironment('pc', this)">💻 PC 모드</div>
+                <div class="env-btn" onclick="setEnvironment('mobile', this)">📱 모바일 모드</div>
             </div>
 
             <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
             
-            <div style="font-size: 0.85rem; text-align: left; margin-top: 4px; color: var(--text-muted);">캐릭터 선택:</div>
+            <div style="font-size: 0.8rem; text-align: left; margin-top: 2px; color: var(--text-muted);">캐릭터 선택:</div>
             <div class="char-grid">
-                <div class="char-card selected" onclick="selectChar('rabbit', this)"><div>🐰</div>토끼<br>높은점프</div>
-                <div class="char-card" onclick="selectChar('turtle', this)"><div>🐢</div>거북이<br>탱크체력</div>
-                <div class="char-card" onclick="selectChar('lion', this)"><div>🦁</div>사자<br>밸런스</div>
-                <div class="char-card" onclick="selectChar('penguin', this)"><div>🐧</div>펭귄<br>가벼움</div>
-                <div class="char-card" onclick="selectChar('chicken', this)"><div>🐔</div>닭<br>특수점프</div>
-                <div class="char-card" onclick="selectChar('mouse', this)"><div>🐭</div>쥐<br>고속이동</div>
-                <div class="char-card" onclick="selectChar('chick', this)"><div>🐥</div>병아리<br>특수능력</div>
+                <div class="char-card selected" onclick="selectChar('rabbit', this)"><div>🐰</div>토끼</div>
+                <div class="char-card" onclick="selectChar('turtle', this)"><div>🐢</div>거북이</div>
+                <div class="char-card" onclick="selectChar('lion', this)"><div>🦁</div>사자</div>
+                <div class="char-card" onclick="selectChar('penguin', this)"><div>🐧</div>펭귄</div>
+                <div class="char-card" onclick="selectChar('chicken', this)"><div>🐔</div>닭</div>
+                <div class="char-card" onclick="selectChar('mouse', this)"><div>🐭</div>쥐</div>
+                <div class="char-card" onclick="selectChar('chick', this)"><div>🐥</div>병아리</div>
+                <!-- 💡 특별 참가자 캐릭터 및 물음표(랜덤) 추가 -->
+                <div class="char-card" onclick="selectChar('leekin', this)"><div>⚽</div>이강인</div>
+                <div class="char-card" onclick="selectChar('kimeunsung', this)"><div>🎸</div>김은성</div>
+                <div class="char-card" onclick="selectChar('jiseoeun', this)"><div>📚</div>지서은</div>
+                <div class="char-card" onclick="selectChar('jisoeun', this)"><div>🎨</div>지소은</div>
+                <div class="char-card" onclick="selectChar('random', this)" style="border-color:#ffcc00; background:rgba(255,204,0,0.15);"><div>❓</div>랜덤고르기</div>
             </div>
 
             <button onclick="showIntro()">선택 완료 및 입장</button>
@@ -143,12 +149,13 @@
 
         <!-- 2. 인트로 -->
         <div id="intro-screen" class="box" style="display: none;">
-            <h2>10단계 스테이지 탈출 로드!</h2>
+            <h2>50단계 스테이지 대탈출!</h2>
             <div class="story-text">
-                총 10개의 스테이지를 돌파하세요!<br><br>
+                총 <span>50개의 스테이지</span>를 돌파하세요!<br>
+                각 스테이지별 제한 시간 <span>30초</span> 동안 생존해야 합니다.<br><br>
                 🕹️ <span>점프</span>: 스페이스바 또는 [점프] 버튼<br>
                 ⚔️ <span>공격</span>: 'F' 키 또는 [공격] 버튼으로 장애물 파괴!<br>
-                ⚠️ <span>낙하물 주의</span>: 위에서 떨어지는 위치는 빨간색 깜빡이로 미리 알려줍니다!
+                ⚠️ <span>낙하물 경고</span>: 빨간색 십자 깜빡이 표시 주의!
             </div>
             <button onclick="joinGameAndStart()">대탈출 질주 시작!</button>
         </div>
@@ -156,7 +163,8 @@
         <!-- 3. 게임 플레이 화면 -->
         <div id="game-area">
             <div class="status-bar">
-                <span id="stage-title" style="color: var(--primary-glow);">[스테이지 1 / 10]</span>
+                <span id="stage-title" style="color: var(--primary-glow);">[스테이지 1 / 50]</span>
+                <span id="timer-display" style="color: #ffd43b;">⏱️ 30초</span>
                 <span id="hp-display" style="color: #ff4b4b;">❤️❤️❤️❤️❤️</span>
             </div>
 
@@ -177,7 +185,7 @@
             authDomain: "gsyouth-exit.firebaseapp.com",
             databaseURL: "https://gsyouth-exit-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "gsyouth-exit",
-            storageBucket: "gsyouth-exit.firebasestorage.app",
+            storageBucket: "gsyouth-exit.appspot.com",
             messagingSenderId: "683811058406",
             appId: "1:683811058406:web:bdf4f2131580b52b824127",
             measurementId: "G-8XBHWLCQZ7"
@@ -186,17 +194,21 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // 💡 캐릭터 및 특별 참가자 능력치 정의
         const CHAR_STATS = {
-            rabbit:  { emoji: '🐰', jumpPower: -11.5, maxHp: 5.0 },
-            turtle:  { emoji: '🐢', jumpPower: -9.5,  maxHp: 8.0 },
-            lion:    { emoji: '🦁', jumpPower: -10.5, maxHp: 5.0 },
-            penguin: { emoji: '🐧', jumpPower: -10.0, maxHp: 6.0 },
-            chicken: { emoji: '🐔', jumpPower: -11.0, maxHp: 4.0 },
-            mouse:   { emoji: '🐭', jumpPower: -10.8, maxHp: 4.0 },
-            chick:   { emoji: '🐥', jumpPower: -10.2, maxHp: 5.0 }
+            rabbit:     { emoji: '🐰', jumpPower: -11.5, maxHp: 5.0 },
+            turtle:     { emoji: '🐢', jumpPower: -9.5,  maxHp: 8.0 },
+            lion:       { emoji: '🦁', jumpPower: -10.5, maxHp: 5.0 },
+            penguin:    { emoji: '🐧', jumpPower: -10.0, maxHp: 6.0 },
+            chicken:    { emoji: '🐔', jumpPower: -11.0, maxHp: 4.0 },
+            mouse:      { emoji: '🐭', jumpPower: -10.8, maxHp: 4.0 },
+            chick:      { emoji: '🐥', jumpPower: -10.2, maxHp: 5.0 },
+            leekin:     { emoji: '⚽', jumpPower: -12.0, maxHp: 6.0 }, // 이강인 (스피디형)
+            kimeunsung: { emoji: '🎸', jumpPower: -10.5, maxHp: 7.0 }, // 김은성 (밸런스형)
+            jiseoeun:   { emoji: '📚', jumpPower: -10.0, maxHp: 8.0 }, // 지서은 (고체력형)
+            jisoeun:    { emoji: '🎨', jumpPower: -12.5, maxHp: 4.0 }  // 지소은 (초고속점프형)
         };
 
-        // 💡 환경 선택 로직 (PC vs 모바일 화면 크기 가변 조절)
         let canvasWidth = 680;
         function setEnvironment(env, el) {
             document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('selected'));
@@ -209,7 +221,7 @@
                 canvasWidth = 680;
                 container.style.maxWidth = '720px';
             } else {
-                canvasWidth = 380; // 모바일 환경에 맞는 컴팩트 크기
+                canvasWidth = 380;
                 container.style.maxWidth = '420px';
             }
             canvas.width = canvasWidth;
@@ -228,20 +240,21 @@
         let myState = {
             x: 80, y: groundY, vy: 0, isJumping: false,
             hp: 5.0, maxHp: 5.0, jumpPower: -10.5, invincible: 0,
-            stage: 1, score: 0
+            stage: 1, 
+            stageTimeLeft: 30, // 각 스테이지별 30초 제한 시간
+            timerInterval: null
         };
 
         let obstacles = [];
-        let warnings = [];    // 낙하물 사전 경고 표시 리스트
+        let warnings = [];    
         let projectiles = []; 
         let holes = [];       
         let obstacleTimer = 0;
         let isStageCleared = false;
         let isGameOver = false;
         let isFinalVictory = false;
-        let randomGameOverQuote = ""; // 랜덤 게임오버 멘트 저장용
+        let randomGameOverQuote = ""; 
 
-        // 💡 게임오버 시 지정된 멘트들 중 랜덤 선택
         const gameOverQuotes = [
             "이강인: 바~~보",
             "김은성: 아니 아니 아니 다시",
@@ -260,6 +273,12 @@
         }
 
         function joinGameAndStart() {
+            // 💡 물음표(랜덤) 선택 시 7가지 동물 및 참가자 중 무작위 배정
+            if (selectedCharKey === 'random') {
+                const keys = Object.keys(CHAR_STATS);
+                selectedCharKey = keys[Math.floor(Math.random() * keys.length)];
+            }
+
             const stats = CHAR_STATS[selectedCharKey];
             myState.hp = stats.maxHp; myState.maxHp = stats.maxHp; myState.jumpPower = stats.jumpPower;
 
@@ -274,7 +293,29 @@
 
             db.ref('gameRoom/players').on('value', (snap) => { allPlayersData = snap.val() || {}; });
             setupControls();
+            
+            // 30초 타이머 시작
+            startStageTimer();
             requestAnimationFrame(gameLoop);
+        }
+
+        // 💡 각 스테이지별 30초 타이머 관리 함수
+        function startStageTimer() {
+            myState.stageTimeLeft = 30;
+            if (myState.timerInterval) clearInterval(myState.timerInterval);
+
+            myState.timerInterval = setInterval(() => {
+                if (!isStageCleared && !isGameOver && !isFinalVictory && myState.hp > 0) {
+                    myState.stageTimeLeft--;
+                    if (myState.stageTimeLeft <= 0) {
+                        // 30초 생존 성공 시 스테이지 클리어!
+                        isStageCleared = true;
+                        obstacles = [];
+                        warnings = [];
+                        clearInterval(myState.timerInterval);
+                    }
+                }
+            }, 1000);
         }
 
         function setupControls() {
@@ -332,8 +373,8 @@
 
                 if (myState.invincible > 0) myState.invincible--;
 
-                // 구멍 함정 생성
-                if (myState.stage >= 3 && holes.length === 0 && Math.random() < 0.02) {
+                // 50스테이지에 맞춰 구멍 및 낙하물 규칙 확장
+                if (myState.stage >= 3 && holes.length === 0 && Math.random() < 0.025) {
                     holes.push({ x: canvasWidth, w: 70 });
                 }
                 for (let i = holes.length - 1; i >= 0; i--) {
@@ -341,40 +382,36 @@
                     if (holes[i].x < -100) holes.splice(i, 1);
                 }
 
-                // 낙하물 경고 타이머 관리 및 스폰
                 for (let i = warnings.length - 1; i >= 0; i--) {
                     warnings[i].timer--;
                     if (warnings[i].timer <= 0) {
-                        // 경고 종료 후 실제 장애물 생성
-                        obstacles.push({ x: warnings[i].x, y: -30, w: 22, h: 22, speed: 0, vy: 4.5 + myState.stage*0.3, type: 'falling' });
+                        obstacles.push({ x: warnings[i].x, y: -30, w: 20, h: 20, speed: 0, vy: 5.0 + (myState.stage * 0.1), type: 'falling' });
                         warnings.splice(i, 1);
                     }
                 }
 
-                // 장애물 스폰
-                let spawnInterval = Math.max(35, 90 - (myState.stage * 5));
+                // 스테이지가 높아질수록 장애물 밀도와 속도가 점점 어려워짐 (최대 50단계 보정)
+                let spawnInterval = Math.max(25, 80 - (myState.stage * 1.1));
                 obstacleTimer++;
-                if (obstacleTimer > spawnInterval + (Math.random() * 30 - 15)) {
+                if (obstacleTimer > spawnInterval + (Math.random() * 20 - 10)) {
                     let obsType = 'normal';
-                    if (myState.stage >= 4 && Math.random() < 0.35) {
+                    if (myState.stage >= 3 && Math.random() < 0.4) {
                         obsType = 'falling';
                     }
 
-                    let oWidth = 16 + (myState.stage % 4) * 4;
-                    let oHeight = 20 + (myState.stage % 2) * 10;
-                    let oSpeed = 3.5 + (myState.stage * 0.35) + (Math.random() * 1.5);
+                    let oWidth = 15 + (myState.stage % 5) * 3;
+                    let oHeight = 18 + (myState.stage % 3) * 8;
+                    let oSpeed = 3.8 + (myState.stage * 0.12) + (Math.random() * 1.5);
 
                     if (obsType === 'falling') {
-                        let dropX = 100 + Math.random() * (canvasWidth - 150);
-                        // 💡 낙하 지점에 미리 깜빡이 경고 생성 (약 1초간 깜빡인 뒤 떨어짐)
-                        warnings.push({ x: dropX, timer: 45 });
+                        let dropX = 80 + Math.random() * (canvasWidth - 130);
+                        warnings.push({ x: dropX, timer: 40 });
                     } else {
                         obstacles.push({ x: canvasWidth, y: groundY - (oHeight - 12), w: oWidth, h: oHeight, speed: oSpeed, type: 'normal' });
                     }
                     obstacleTimer = 0;
                 }
 
-                // 발사체 충돌 판정
                 for (let i = projectiles.length - 1; i >= 0; i--) {
                     projectiles[i].x += projectiles[i].speed;
                     if (projectiles[i].x > canvasWidth + 20) {
@@ -392,7 +429,6 @@
                     }
                 }
 
-                // 장애물 충돌 판정
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     let obs = obstacles[i];
                     if (obs.type === 'falling') {
@@ -411,13 +447,6 @@
                     }
                 }
 
-                myState.score++;
-                if (myState.score > 450) {
-                    isStageCleared = true;
-                    obstacles = [];
-                    warnings = [];
-                }
-
                 if (Date.now() - lastSyncTime > 35) {
                     db.ref('gameRoom/players/' + myId).update({ y: myState.y, hp: myState.hp, stage: myState.stage });
                     lastSyncTime = Date.now();
@@ -430,18 +459,19 @@
         }
 
         function updateHpUI() {
-            document.getElementById('stage-title').innerText = `[스테이지 ${myState.stage} / 10]`;
+            document.getElementById('stage-title').innerText = `[스테이지 ${myState.stage} / 50]`;
+            document.getElementById('timer-display').innerText = `⏱️ ${myState.stageTimeLeft}초`;
             let fullH = Math.floor(myState.hp), hasH = (myState.hp % 1 !== 0), maxH = Math.ceil(myState.maxHp);
             document.getElementById('hp-display').innerText = "❤️".repeat(fullH) + (hasH ? "💔" : "") + "🖤".repeat(Math.max(0, maxH - Math.ceil(myState.hp)));
         }
 
         function nextStage() {
-            if (myState.stage < 10) {
+            if (myState.stage < 50) {
                 myState.stage++;
-                myState.score = 0;
-                myState.hp = Math.min(myState.maxHp, myState.hp + 1.0);
+                myState.hp = Math.min(myState.maxHp, myState.hp + 1.0); // 클리어 시 보상 체력 회복
                 holes = [];
                 isStageCleared = false;
+                startStageTimer(); // 다음 스테이지 30초 타이머 리셋 시작
             } else {
                 isFinalVictory = true;
                 isStageCleared = false;
@@ -451,7 +481,6 @@
         function drawSideScrollMap() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 바닥 및 구멍 렌더링
             ctx.fillStyle = "#1e222d";
             let lastX = 0;
             for (let h of holes) {
@@ -463,30 +492,24 @@
             }
             ctx.fillRect(lastX, groundY + 12, canvas.width - lastX, canvas.height - (groundY + 12));
 
-            // 낙하물 사전 경고 표시 (빨간색 깜빡이 십자 기호)
             for (let w of warnings) {
-                if (Math.floor(w.timer / 5) % 2 === 0) { // 깜빡이는 효과
-                    ctx.strokeStyle = "#ff4b4b";
-                    ctx.lineWidth = 2;
+                if (Math.floor(w.timer / 5) % 2 === 0) {
+                    ctx.strokeStyle = "#ff4b4b"; ctx.lineWidth = 2;
                     ctx.beginPath();
                     ctx.moveTo(w.x - 10, groundY); ctx.lineTo(w.x + 10, groundY + 15);
                     ctx.moveTo(w.x + 10, groundY); ctx.lineTo(w.x - 10, groundY + 15);
                     ctx.stroke();
 
-                    ctx.fillStyle = "#ff4b4b";
-                    ctx.font = "bold 11px sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.fillText("⚠️ 낙하 주의", w.x, groundY - 5);
+                    ctx.fillStyle = "#ff4b4b"; ctx.font = "bold 11px sans-serif";
+                    ctx.textAlign = "center"; ctx.fillText("⚠️ 낙하 주의", w.x, groundY - 5);
                 }
             }
 
-            // 스테이지 표시 워터마크
-            ctx.fillStyle = "rgba(255,255,255,0.08)";
+            ctx.fillStyle = "rgba(255,255,255,0.06)";
             ctx.font = "bold 80px sans-serif";
             ctx.textAlign = "center";
             ctx.fillText(myState.stage, canvas.width / 2, canvas.height / 2 + 25);
 
-            // 장애물
             ctx.fillStyle = "#ff4b4b";
             for (let obs of obstacles) {
                 ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
@@ -494,52 +517,40 @@
                 ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
             }
 
-            // 발사체
             ctx.fillStyle = "#00e676";
             for (let p of projectiles) {
                 ctx.fillRect(p.x, p.y, p.w, p.h);
             }
 
-            // 플레이어들
             Object.keys(allPlayersData).forEach(key => {
                 const p = allPlayersData[key];
                 if (p.y !== undefined) {
                     if (key === myId && myState.invincible > 0 && Math.floor(myState.invincible / 4) % 2 === 0) return;
                     let renderY = (key === myId) ? myState.y : p.y;
-                    ctx.font = "26px sans-serif";
-                    ctx.textAlign = "center";
+                    ctx.font = "26px sans-serif"; ctx.textAlign = "center";
                     ctx.fillText(p.emoji || '🐰', myState.x, renderY);
                     ctx.fillStyle = "white"; ctx.font = "bold 10px sans-serif";
                     ctx.fillText(p.name, myState.x, renderY - 18);
                 }
             });
 
-            // 1. 스테이지 클리어 팝업 창
             if (isStageCleared) {
-                ctx.fillStyle = "rgba(0, 0, 0, 0.82)";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#00e676";
-                ctx.font = "bold 24px sans-serif";
-                ctx.textAlign = "center";
+                ctx.fillStyle = "rgba(0, 0, 0, 0.82)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00e676"; ctx.font = "bold 24px sans-serif"; ctx.textAlign = "center";
                 ctx.fillText(`🎉 스테이지 ${myState.stage} 클리어!`, canvas.width / 2, canvas.height / 2 - 25);
-                
-                ctx.fillStyle = "white";
-                ctx.font = "14px sans-serif";
-                ctx.fillText("아래 버튼을 눌러 다음 스테이지로 이동하세요!", canvas.width / 2, canvas.height / 2 + 10);
+                ctx.fillStyle = "white"; ctx.font = "14px sans-serif";
+                ctx.fillText("30초 생존 성공! 다음 스테이지로 이동하세요.", canvas.width / 2, canvas.height / 2 + 10);
             }
 
-            // 2. 게임 오버 (랜덤 멘트 출력)
             if (myState.hp <= 0) {
                 if (!isGameOver) {
                     isGameOver = true;
-                    // 게임오버 순간 무작위 멘트 지정
                     randomGameOverQuote = gameOverQuotes[Math.floor(Math.random() * gameOverQuotes.length)];
                 }
                 ctx.fillStyle = "rgba(0, 0, 0, 0.85)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#ff4b4b"; ctx.font = "bold 22px sans-serif"; ctx.textAlign = "center";
                 ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
                 
-                // 💡 지정된 랜덤 멘트 출력
                 ctx.fillStyle = "#ffcc00"; ctx.font = "bold 15px sans-serif";
                 ctx.fillText(`💬 ${randomGameOverQuote}`, canvas.width / 2, canvas.height / 2 + 10);
 
@@ -547,18 +558,16 @@
                 ctx.fillText("새로고침하여 다시 도전하세요!", canvas.width / 2, canvas.height / 2 + 38);
             }
 
-            // 3. 최종 클리어
             if (isFinalVictory) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.9)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#00e676"; ctx.font = "bold 26px sans-serif"; ctx.textAlign = "center";
-                ctx.fillText("🏆 <바이브 코딩> 대탈출 최종 성공! 🏆", canvas.width / 2, canvas.height / 2 - 15);
+                ctx.fillText("🏆 <바이브 코딩> 50스테이지 최종 대탈출 성공! 🏆", canvas.width / 2, canvas.height / 2 - 15);
                 ctx.fillStyle = "white"; ctx.font = "14px sans-serif";
-                ctx.fillText("모든 10개 스테이지를 완벽히 돌파했습니다!", canvas.width / 2, canvas.height / 2 + 20);
+                ctx.fillText("모든 50개 스테이지를 완벽히 돌파했습니다!", canvas.width / 2, canvas.height / 2 + 20);
             }
         }
     </script>
 
-    <!-- 수동 클리어 이동 버튼 오버레이 -->
     <div id="clear-overlay" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:100; text-align:center;">
         <button onclick="hideOverlayAndNext()" style="padding: 16px 32px; font-size:1.2rem; background:#00e676; color:#111; border-radius:12px; font-weight:900; border:none; box-shadow:0 0 20px #00e676; cursor:pointer;">다음 스테이지로 이동 ➔</button>
     </div>
