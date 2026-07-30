@@ -28,11 +28,11 @@
         }
 
         .container {
-            width: 100%; max-width: 640px; padding: 15px; box-sizing: border-box;
+            width: 100%; max-width: 720px; padding: 15px; box-sizing: border-box;
             display: flex; flex-direction: column; align-items: center;
         }
 
-        h1 { color: var(--primary-glow); margin: 5px 0 8px; font-size: 1.4rem; text-align: center; }
+        h1 { color: var(--primary-glow); margin: 5px 0 8px; font-size: 1.5rem; text-align: center; }
         h2 { font-size: 1.1rem; margin-top: 0; color: #fff; }
         
         .box {
@@ -58,6 +58,15 @@
         .char-card.selected { border-color: var(--primary-glow); background: rgba(143, 148, 251, 0.2); }
         .char-card div:first-child { font-size: 1.5rem; margin-bottom: 2px; }
 
+        .env-btn-group {
+            display: flex; gap: 10px; margin: 12px 0;
+        }
+        .env-btn {
+            flex: 1; padding: 12px; background: #252830; border: 2px solid #555; border-radius: 8px;
+            color: #ccc; font-weight: bold; cursor: pointer; font-size: 0.95rem;
+        }
+        .env-btn.selected { border-color: var(--primary-glow); background: rgba(143, 148, 251, 0.25); color: white; }
+
         button {
             width: 100%; padding: 14px; margin-top: 10px;
             background: linear-gradient(45deg, var(--primary), var(--primary-glow));
@@ -69,23 +78,23 @@
         .story-text { line-height: 1.4; font-size: 0.9rem; text-align: left; margin-bottom: 12px; word-break: keep-all; }
         .story-text span { color: var(--primary-glow); font-weight: bold; }
 
-        /* 🗺️ 넓어진 게임 화면 */
+        /* 🗺️ 화면 크기 가변형 캔버스 컨테이너 */
         #game-area { display: none; flex-direction: column; align-items: center; width: 100%; }
 
         .status-bar {
-            width: 100%; max-width: 600px; background: rgba(255,255,255,0.05);
+            width: 100%; max-width: var(--canvas-w, 680px); background: rgba(255,255,255,0.05);
             padding: 8px 12px; border-radius: 8px; margin-bottom: 6px;
             display: flex; justify-content: space-between; align-items: center;
             font-size: 0.85rem; box-sizing: border-box; font-weight: bold; border: 1px solid #333;
         }
 
         #side-canvas {
-            width: 600px; height: 260px; background: #15171e;
+            width: var(--canvas-w, 680px); height: 260px; background: #15171e;
             border: 3px solid #444; border-radius: 12px; box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
 
         .control-panel {
-            width: 100%; max-width: 600px; display: flex; gap: 10px;
+            width: 100%; max-width: var(--canvas-w, 680px); display: flex; gap: 10px;
             align-items: center; margin-top: 10px; box-sizing: border-box;
         }
 
@@ -103,15 +112,22 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container" id="main-container">
         <h1>&lt;바이브 코딩&gt; 대탈출</h1>
 
-        <!-- 1. 캐릭터 선택 -->
+        <!-- 1. 환경 및 캐릭터 선택 -->
         <div id="login-screen" class="box">
-            <h2>탐색원 및 캐릭터 선택</h2>
+            <h2>접속 환경 및 캐릭터 선택</h2>
+            
+            <div style="font-size: 0.85rem; text-align: left; margin-top: 4px; color: var(--text-muted);">접속 환경 선택:</div>
+            <div class="env-btn-group">
+                <div class="env-btn selected" onclick="setEnvironment('pc', this)">💻 PC 모드 (넓은 화면)</div>
+                <div class="env-btn" onclick="setEnvironment('mobile', this)">📱 모바일 모드 (맞춤 화면)</div>
+            </div>
+
             <input type="text" id="player-name" placeholder="참가자 이름 입력" required>
             
-            <div style="font-size: 0.85rem; text-align: left; margin-top: 6px; color: var(--text-muted);">캐릭터 선택:</div>
+            <div style="font-size: 0.85rem; text-align: left; margin-top: 4px; color: var(--text-muted);">캐릭터 선택:</div>
             <div class="char-grid">
                 <div class="char-card selected" onclick="selectChar('rabbit', this)"><div>🐰</div>토끼<br>높은점프</div>
                 <div class="char-card" onclick="selectChar('turtle', this)"><div>🐢</div>거북이<br>탱크체력</div>
@@ -132,7 +148,7 @@
                 총 10개의 스테이지를 돌파하세요!<br><br>
                 🕹️ <span>점프</span>: 스페이스바 또는 [점프] 버튼<br>
                 ⚔️ <span>공격</span>: 'F' 키 또는 [공격] 버튼으로 장애물 파괴!<br>
-                ⚠️ 스테이지마다 <span>낙하물, 구멍(함정), 고속 장애물</span> 등 다양한 규칙이 적용됩니다.
+                ⚠️ <span>낙하물 주의</span>: 위에서 떨어지는 위치는 빨간색 깜빡이로 미리 알려줍니다!
             </div>
             <button onclick="joinGameAndStart()">대탈출 질주 시작!</button>
         </div>
@@ -144,7 +160,7 @@
                 <span id="hp-display" style="color: #ff4b4b;">❤️❤️❤️❤️❤️</span>
             </div>
 
-            <canvas id="side-canvas" width="600" height="260"></canvas>
+            <canvas id="side-canvas" width="680" height="260"></canvas>
 
             <div class="control-panel">
                 <button class="action-btn jump-btn" id="btn-jump">👆 점프 (SPACE)</button>
@@ -161,7 +177,7 @@
             authDomain: "gsyouth-exit.firebaseapp.com",
             databaseURL: "https://gsyouth-exit-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "gsyouth-exit",
-            storageBucket: "gsyouth-exit.appspot.com",
+            storageBucket: "gsyouth-exit.firebasestorage.app",
             messagingSenderId: "683811058406",
             appId: "1:683811058406:web:bdf4f2131580b52b824127",
             measurementId: "G-8XBHWLCQZ7"
@@ -180,6 +196,26 @@
             chick:   { emoji: '🐥', jumpPower: -10.2, maxHp: 5.0 }
         };
 
+        // 💡 환경 선택 로직 (PC vs 모바일 화면 크기 가변 조절)
+        let canvasWidth = 680;
+        function setEnvironment(env, el) {
+            document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            
+            const container = document.getElementById('main-container');
+            const canvas = document.getElementById('side-canvas');
+
+            if (env === 'pc') {
+                canvasWidth = 680;
+                container.style.maxWidth = '720px';
+            } else {
+                canvasWidth = 380; // 모바일 환경에 맞는 컴팩트 크기
+                container.style.maxWidth = '420px';
+            }
+            canvas.width = canvasWidth;
+            document.documentElement.style.setProperty('--canvas-w', canvasWidth + 'px');
+        }
+
         let selectedCharKey = 'rabbit';
         function selectChar(key, el) {
             document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
@@ -196,12 +232,22 @@
         };
 
         let obstacles = [];
-        let projectiles = []; // 발사체 (공격 기능)
-        let holes = [];       // 구멍 함정
+        let warnings = [];    // 낙하물 사전 경고 표시 리스트
+        let projectiles = []; 
+        let holes = [];       
         let obstacleTimer = 0;
         let isStageCleared = false;
         let isGameOver = false;
         let isFinalVictory = false;
+        let randomGameOverQuote = ""; // 랜덤 게임오버 멘트 저장용
+
+        // 💡 게임오버 시 지정된 멘트들 중 랜덤 선택
+        const gameOverQuotes = [
+            "이강인: 바~~보",
+            "김은성: 아니 아니 아니 다시",
+            "지서은: 음~~~ 모르겠죠",
+            "지소은: 죽어라 하하하하하 아니아니아니에요"
+        ];
 
         const canvas = document.getElementById('side-canvas');
         const ctx = canvas.getContext('2d');
@@ -248,7 +294,6 @@
             }
         }
 
-        // ⚔️ 공격 기능: 발사체 발사
         function triggerAttack() {
             if (myState.hp > 0 && !isStageCleared && !isGameOver) {
                 projectiles.push({ x: myState.x + 15, y: myState.y - 12, w: 14, h: 6, speed: 8 });
@@ -259,11 +304,9 @@
 
         function gameLoop() {
             if (myState.hp > 0 && !isStageCleared && !isGameOver) {
-                // 물리 엔진
                 myState.vy += 0.55;
                 myState.y += myState.vy;
 
-                // 구멍(함정) 위를 지나갈 때 바닥이 없으면 추락 체크
                 let overHole = false;
                 for (let h of holes) {
                     if (myState.x > h.x && myState.x < h.x + h.w && myState.y >= groundY) {
@@ -273,9 +316,8 @@
                 }
 
                 if (overHole) {
-                    // 구멍에 빠짐 (아래로 추락)
                     myState.y += 4;
-                    if (myState.y > 260) { // 화면 밑으로 떨어지면 데미지 후 리스폰
+                    if (myState.y > 260) {
                         myState.hp = Math.max(0, myState.hp - 1.0);
                         myState.y = groundY; myState.vy = 0; myState.isJumping = false;
                         myState.invincible = 40;
@@ -290,58 +332,67 @@
 
                 if (myState.invincible > 0) myState.invincible--;
 
-                // 스테이지별 룰 적용 및 스폰 규칙
-                // 홀(구멍) 생성 (스테이지 3, 6, 9 등에서 등장)
+                // 구멍 함정 생성
                 if (myState.stage >= 3 && holes.length === 0 && Math.random() < 0.02) {
-                    holes.push({ x: 600, w: 70 });
+                    holes.push({ x: canvasWidth, w: 70 });
                 }
                 for (let i = holes.length - 1; i >= 0; i--) {
                     holes[i].x -= 3.5;
                     if (holes[i].x < -100) holes.splice(i, 1);
                 }
 
-                // 장애물 스폰 (스테이지가 높을수록 빠르고 불규칙함)
+                // 낙하물 경고 타이머 관리 및 스폰
+                for (let i = warnings.length - 1; i >= 0; i--) {
+                    warnings[i].timer--;
+                    if (warnings[i].timer <= 0) {
+                        // 경고 종료 후 실제 장애물 생성
+                        obstacles.push({ x: warnings[i].x, y: -30, w: 22, h: 22, speed: 0, vy: 4.5 + myState.stage*0.3, type: 'falling' });
+                        warnings.splice(i, 1);
+                    }
+                }
+
+                // 장애물 스폰
                 let spawnInterval = Math.max(35, 90 - (myState.stage * 5));
                 obstacleTimer++;
                 if (obstacleTimer > spawnInterval + (Math.random() * 30 - 15)) {
                     let obsType = 'normal';
-                    // 스테이지 4 이상부터는 위에서 떨어지는 장애물(낙하물) 등장 규칙 추가
                     if (myState.stage >= 4 && Math.random() < 0.35) {
                         obsType = 'falling';
                     }
 
                     let oWidth = 16 + (myState.stage % 4) * 4;
                     let oHeight = 20 + (myState.stage % 2) * 10;
-                    let oSpeed = 3.5 + (myState.stage * 0.35) + (Math.random() * 1.5); // 불규칙 속도
+                    let oSpeed = 3.5 + (myState.stage * 0.35) + (Math.random() * 1.5);
 
                     if (obsType === 'falling') {
-                        obstacles.push({ x: 100 + Math.random() * 400, y: -30, w: 22, h: 22, speed: 0, vy: 4 + myState.stage*0.3, type: 'falling' });
+                        let dropX = 100 + Math.random() * (canvasWidth - 150);
+                        // 💡 낙하 지점에 미리 깜빡이 경고 생성 (약 1초간 깜빡인 뒤 떨어짐)
+                        warnings.push({ x: dropX, timer: 45 });
                     } else {
-                        obstacles.push({ x: 600, y: groundY - (oHeight - 12), w: oWidth, h: oHeight, speed: oSpeed, type: 'normal' });
+                        obstacles.push({ x: canvasWidth, y: groundY - (oHeight - 12), w: oWidth, h: oHeight, speed: oSpeed, type: 'normal' });
                     }
                     obstacleTimer = 0;
                 }
 
-                // 발사체(공격) 이동 및 장애물 파괴 판정
+                // 발사체 충돌 판정
                 for (let i = projectiles.length - 1; i >= 0; i--) {
                     projectiles[i].x += projectiles[i].speed;
-                    if (projectiles[i].x > 620) {
+                    if (projectiles[i].x > canvasWidth + 20) {
                         projectiles.splice(i, 1);
                         continue;
                     }
-                    // 장애물과 총알 충돌 체크
                     for (let j = obstacles.length - 1; j >= 0; j--) {
                         let obs = obstacles[j];
                         if (projectiles[i] && projectiles[i].x > obs.x && projectiles[i].x < obs.x + obs.w &&
                             projectiles[i].y > obs.y && projectiles[i].y < obs.y + obs.h) {
-                            obstacles.splice(j, 1); // 장애물 파괴!
-                            projectiles.splice(i, 1); // 총알 소멸
+                            obstacles.splice(j, 1);
+                            projectiles.splice(i, 1);
                             break;
                         }
                     }
                 }
 
-                // 장애물 이동 및 플레이어 충돌 판정
+                // 장애물 충돌 판정
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     let obs = obstacles[i];
                     if (obs.type === 'falling') {
@@ -352,7 +403,6 @@
                         if (obs.x < -40) { obstacles.splice(i, 1); continue; }
                     }
 
-                    // 플레이어 충돌 체크
                     if (myState.invincible === 0 &&
                         myState.x - 12 < obs.x + obs.w && myState.x + 12 > obs.x &&
                         (myState.y - 24) < obs.y + obs.h && myState.y > obs.y) {
@@ -361,11 +411,11 @@
                     }
                 }
 
-                // 일정 거리/시간 버티면 스테이지 클리어 조건 달성 (예: 500프레임 생존)
                 myState.score++;
                 if (myState.score > 450) {
                     isStageCleared = true;
-                    obstacles = []; // 잔여 장애물 청소
+                    obstacles = [];
+                    warnings = [];
                 }
 
                 if (Date.now() - lastSyncTime > 35) {
@@ -385,12 +435,11 @@
             document.getElementById('hp-display').innerText = "❤️".repeat(fullH) + (hasH ? "💔" : "") + "🖤".repeat(Math.max(0, maxH - Math.ceil(myState.hp)));
         }
 
-        // 다음 스테이지로 이동 버튼 핸들러
         function nextStage() {
             if (myState.stage < 10) {
                 myState.stage++;
                 myState.score = 0;
-                myState.hp = Math.min(myState.maxHp, myState.hp + 1.0); // 클리어 보상 체력 회복
+                myState.hp = Math.min(myState.maxHp, myState.hp + 1.0);
                 holes = [];
                 isStageCleared = false;
             } else {
@@ -402,18 +451,34 @@
         function drawSideScrollMap() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 바닥 및 구멍(함정) 렌더링
+            // 바닥 및 구멍 렌더링
             ctx.fillStyle = "#1e222d";
             let lastX = 0;
             for (let h of holes) {
                 ctx.fillRect(lastX, groundY + 12, h.x - lastX, canvas.height - (groundY + 12));
-                // 구멍 구간은 바닥을 안 그리고 깊은 어둠(함정) 표현
                 ctx.fillStyle = "#050508";
                 ctx.fillRect(h.x, groundY + 12, h.w, canvas.height - (groundY + 12));
                 ctx.fillStyle = "#1e222d";
                 lastX = h.x + h.w;
             }
             ctx.fillRect(lastX, groundY + 12, canvas.width - lastX, canvas.height - (groundY + 12));
+
+            // 낙하물 사전 경고 표시 (빨간색 깜빡이 십자 기호)
+            for (let w of warnings) {
+                if (Math.floor(w.timer / 5) % 2 === 0) { // 깜빡이는 효과
+                    ctx.strokeStyle = "#ff4b4b";
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(w.x - 10, groundY); ctx.lineTo(w.x + 10, groundY + 15);
+                    ctx.moveTo(w.x + 10, groundY); ctx.lineTo(w.x - 10, groundY + 15);
+                    ctx.stroke();
+
+                    ctx.fillStyle = "#ff4b4b";
+                    ctx.font = "bold 11px sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.fillText("⚠️ 낙하 주의", w.x, groundY - 5);
+                }
+            }
 
             // 스테이지 표시 워터마크
             ctx.fillStyle = "rgba(255,255,255,0.08)";
@@ -429,7 +494,7 @@
                 ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
             }
 
-            // 발사체 (총알)
+            // 발사체
             ctx.fillStyle = "#00e676";
             for (let p of projectiles) {
                 ctx.fillRect(p.x, p.y, p.w, p.h);
@@ -458,23 +523,31 @@
                 ctx.textAlign = "center";
                 ctx.fillText(`🎉 스테이지 ${myState.stage} 클리어!`, canvas.width / 2, canvas.height / 2 - 25);
                 
-                // 버튼 영역 시각화 (실제 클릭은 HTML 버튼이나 캔버스 인터랙션으로 처리 가능하도록 안내)
                 ctx.fillStyle = "white";
                 ctx.font = "14px sans-serif";
-                ctx.fillText("아래 버튼을 눌러 다음 층으로 이동하세요!", canvas.width / 2, canvas.height / 2 + 10);
+                ctx.fillText("아래 버튼을 눌러 다음 스테이지로 이동하세요!", canvas.width / 2, canvas.height / 2 + 10);
             }
 
-            // 2. 게임 오버
+            // 2. 게임 오버 (랜덤 멘트 출력)
             if (myState.hp <= 0) {
-                isGameOver = true;
+                if (!isGameOver) {
+                    isGameOver = true;
+                    // 게임오버 순간 무작위 멘트 지정
+                    randomGameOverQuote = gameOverQuotes[Math.floor(Math.random() * gameOverQuotes.length)];
+                }
                 ctx.fillStyle = "rgba(0, 0, 0, 0.85)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "#ff4b4b"; ctx.font = "bold 24px sans-serif"; ctx.textAlign = "center";
-                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 10);
-                ctx.fillStyle = "white"; ctx.font = "13px sans-serif";
-                ctx.fillText("새로고침하여 다시 도전하세요!", canvas.width / 2, canvas.height / 2 + 25);
+                ctx.fillStyle = "#ff4b4b"; ctx.font = "bold 22px sans-serif"; ctx.textAlign = "center";
+                ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 20);
+                
+                // 💡 지정된 랜덤 멘트 출력
+                ctx.fillStyle = "#ffcc00"; ctx.font = "bold 15px sans-serif";
+                ctx.fillText(`💬 ${randomGameOverQuote}`, canvas.width / 2, canvas.height / 2 + 10);
+
+                ctx.fillStyle = "white"; ctx.font = "12px sans-serif";
+                ctx.fillText("새로고침하여 다시 도전하세요!", canvas.width / 2, canvas.height / 2 + 38);
             }
 
-            // 3. 최종 대탈출 성공 클리어
+            // 3. 최종 클리어
             if (isFinalVictory) {
                 ctx.fillStyle = "rgba(0, 0, 0, 0.9)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#00e676"; ctx.font = "bold 26px sans-serif"; ctx.textAlign = "center";
@@ -485,13 +558,12 @@
         }
     </script>
 
-    <!-- 스테이지 클리어 시 나타나는 수동 이동 버튼 오버레이 -->
+    <!-- 수동 클리어 이동 버튼 오버레이 -->
     <div id="clear-overlay" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); z-index:100; text-align:center;">
         <button onclick="hideOverlayAndNext()" style="padding: 16px 32px; font-size:1.2rem; background:#00e676; color:#111; border-radius:12px; font-weight:900; border:none; box-shadow:0 0 20px #00e676; cursor:pointer;">다음 스테이지로 이동 ➔</button>
     </div>
 
     <script>
-        // 클리어 상태 감지하여 HTML 버튼 오버레이 제어
         setInterval(() => {
             const overlay = document.getElementById('clear-overlay');
             if (isStageCleared) {
